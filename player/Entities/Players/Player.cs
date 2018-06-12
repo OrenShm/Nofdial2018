@@ -30,14 +30,14 @@ namespace RoboCup
         public Team m_team;
         public ICoach m_coach;
 
-        public Player(Team team, ICoach coach)
+        public Player(Team team, ICoach coach , bool IsGoalie = false)
         {
             m_coach = coach;
             m_memory = new Memory();
             m_team = team;
             m_robot = new Robot(m_memory);
-            m_robot.Init(team.m_teamName, out m_side, out m_number, out m_playMode);
-
+            m_robot.Init(team.m_teamName, out m_side, out m_number, out m_playMode, IsGoalie);
+            
             Console.WriteLine("New Player - Team: " + m_team.m_teamName + " Side:" + m_side +" Num:" + m_number);
 
             m_strategy = new Thread(new ThreadStart(play));

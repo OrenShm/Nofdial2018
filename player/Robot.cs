@@ -25,9 +25,13 @@ namespace RoboCup
             m_playerMemory = memory;
         }
 
-        public void Init(string team, out char side, out int num, out String playMode)
+        public void Init(string team, out char side, out int num, out String playMode , bool IsGoalie)
         {
-            send("(init " + team + ")");
+            if(IsGoalie)
+                send("(init " + team + " (version 6) (goalie)" + ")");
+            else
+                send("(init " + team + ")");
+
             var result = udpClient.Receive(ref endPoint);
 
             var message = System.Text.Encoding.Default.GetString(result);
