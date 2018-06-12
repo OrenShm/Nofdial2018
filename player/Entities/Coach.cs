@@ -79,7 +79,7 @@ namespace RoboCup.Entities
                 message = receive();
                 //Console.WriteLine($"Received: {message}");
                 ParseLookMessage(message);
-                Thread.Sleep(SoccerParams.simulator_step);
+                Thread.Sleep(20);
             }
         }
 

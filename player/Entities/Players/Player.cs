@@ -3,12 +3,15 @@ using System.Drawing;
 using System.Threading;
 using RoboCup;
 using RoboCup.Entities;
+using RoboCup.Infrastructure;
 
 namespace RoboCup
 {
 
     public class Player : IPlayer
     {
+        const double Rad2Deg = 180.0 / Math.PI;
+        const double Deg2Rad = Math.PI / 180.0;
         // Protected members
         protected Robot m_robot;			    // robot which is controled by this brain
         protected Memory m_memory;				// place where all information is stored
@@ -48,5 +51,84 @@ namespace RoboCup
         {
  
         }
+
+        public SeenCoachObject GetMyPlayerDetailsByCoach()
+        {
+            var res =  m_coach.GetSeenCoachObject($"player {m_team.m_teamName} {m_number}");
+            if (res == null)
+            {
+                throw new Exception("Couldn't find my player");
+            }
+            return res;
+        }
+
+        private double Calc2PointsAngleByXAxis(PointF start, PointF end)
+        {
+            return Math.Atan2(start.Y - end.Y, end.X - start.X) * Rad2Deg;
+        }
+
+        public double GetAngleToPoint(PointF targetPoint)
+        {
+            Console.WriteLine("----------------------------------------");
+
+            var myPosByCoach = GetMyPlayerDetailsByCoach();
+            var angleToTarget = Calc2PointsAngleByXAxis(myPosByCoach.Pos.Value, targetPoint);
+            var myAbsAngle = myPosByCoach.BodyAngle;
+
+            Console.WriteLine($"myGolbalAngle: {myAbsAngle}");
+            Console.WriteLine($"angleToTarget: {angleToTarget}");
+
+            var turnAngle = -1*(Convert.ToDouble(myAbsAngle) + angleToTarget) % 360;
+            Console.WriteLine($"turnAngle: {turnAngle}");
+
+            var fixedAngle = turnAngle;
+
+            if (Math.Abs(fixedAngle) > 180)
+            {
+                if (fixedAngle > 180)
+                {
+                    fixedAngle = fixedAngle - 360;
+                }
+                else
+                {
+                    fixedAngle = fixedAngle + 360;
+                }
+            }
+            Console.WriteLine($"fixedAngle: {fixedAngle}");
+
+
+            return turnAngle;
+        }
+
+        /// <summary>
+        /// Goes to requested coordinate
+        /// 
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns> true in case we reached the requested pos, false otherwise</returns>
+        public bool goToCoordinate(PointF point)
+        {
+            var myPlayerDetails = GetMyPlayerDetailsByCoach();
+
+            var dist = Math.Sqrt(Math.Pow(point.X - myPlayerDetails.Pos.Value.X, 2) + Math.Pow(point.Y - myPlayerDetails.Pos.Value.Y, 2));
+            if (dist < 1)
+            {
+                return true;
+            }
+            var turnAngle = GetAngleToPoint(point);
+            if (Math.Abs(turnAngle) > 10)
+            {
+                m_robot.Turn(turnAngle);
+            }
+            else
+            {
+                m_robot.Dash(Math.Max(100, 20 * dist));
+            }
+            return false;
+
+        }
+
+
+
     }
 }
