@@ -27,74 +27,30 @@ namespace RoboCup
 
             while (!m_timeOver)
             {
-                SeenObject ball = null;
-                SeenObject goal = null;
-
-                //Get current player's info:
-                var bodyInfo = GetBodyInfo();
-                Console.WriteLine($"Kicks so far : {bodyInfo.Kick}");
-
-                while (ball == null || ball.Distance > 1.5)
+                try
                 {
-                    //Get field information from god (coach).
-                    var ballPosByCoach = m_coach.GetSeenCoachObject("ball");
-                    var myPlayer = m_coach.GetSeenCoachObject($"Player Yossi {m_number}");
-                    var otherPlayer = m_coach.GetSeenCoachObject("Player Yossi 2");
-
-                    if (ballPosByCoach != null && ballPosByCoach.Pos != null)
+                    var ball = m_coach.GetSeenCoachObject("ball");
+                    if (ball != null)
                     {
-                        Console.WriteLine($"Ball Position {ballPosByCoach.Pos.Value.X}, {ballPosByCoach.Pos.Value.Y}");
+                        goToCoordinate(ball.Pos.Value);
+
                     }
 
-                    m_memory.waitForNewInfo();
-                    ball = m_memory.GetSeenObject("ball");
-                    if (ball == null)
-                    {
-                        // If you don't know where is ball then find it
-                        m_robot.Turn(40);
-                        m_memory.waitForNewInfo();
-                    }
-                    else if (ball.Distance > 1.5)
-                    {
-                        // If ball is too far then
-                        // turn to ball or 
-                        // if we have correct direction then go to ball
-                        if (Math.Abs((double)ball.Direction) < 0)
-                            m_robot.Turn(ball.Direction.Value);
-                        else
-                            m_robot.Dash(10 * ball.Distance.Value);
-                    }
                 }
-
-                // We know where is ball and we can kick it
-                // so look for goal
-
-                while (goal == null)
+                catch (Exception e)
                 {
-                    m_memory.waitForNewInfo();
-                    if (m_side == 'l')
-                        goal = m_memory.GetSeenObject("goal r");
-                    else
-                        goal = m_memory.GetSeenObject("goal l");
 
-                    if (goal == null)
-                    {
-                        m_robot.Turn(40);
-                    }
                 }
+                // sleep one step to ensure that we will not send
+                // two commands in one cycle.
+                try
+                {
+                    Thread.Sleep(SoccerParams.simulator_step);
+                }
+                catch (Exception e)
+                {
 
-                m_robot.Kick(100, goal.Direction.Value);
-            }
-
-            // sleep one step to ensure that we will not send
-            // two commands in one cycle.
-            try
-            {
-                Thread.Sleep(SoccerParams.simulator_step);
-            }
-            catch (Exception e)
-            {
-
+                }
             }
         }
 
