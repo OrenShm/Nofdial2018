@@ -22,7 +22,7 @@ namespace RoboCup
         public LowerAttackerExample(Team team, ICoach coach) 
             : base(team, coach)
         {
-            m_startPosition = new PointF(m_sideFactor * 10, 0);
+            m_startPosition = new PointF(m_sideFactor * 11, 15);
         }
 
 
@@ -40,9 +40,10 @@ namespace RoboCup
 
                     if (ball != null)
                     {
-                        if (ball.Pos.Value.X < -10 || player.Pos.Value.Y > 0)
+                        if (ball.Pos.Value.X < -10 || player.Pos.Value.Y < -5)
                         {
-                            
+                            goToCoordinate(m_startPosition, 1);
+                            WaitSimulatorStep();
                         }
                         else
                         {
@@ -103,8 +104,8 @@ namespace RoboCup
             {
                 PointF point = new PointF()
                 {
-                    X = ball.Pos.Value.X,
-                    Y = ball.Pos.Value.Y + 2
+                    X = ball.Pos.Value.X ,
+                    Y = ball.Pos.Value.Y + 10
                 };
                 goToCoordinate(point,0);
             }

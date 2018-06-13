@@ -70,6 +70,7 @@
     <Compile Include="Entities\Formations\IFormation.cs" />
     <Compile Include="Entities\ICoach.cs" />
     <Compile Include="Entities\Players\AttackerExample.cs" />
+    <Compile Include="Entities\Players\CenteralAttacker.cs" />
     <Compile Include="Entities\Players\LowerDefender.cs" />
     <Compile Include="Entities\Players\UpperAttackerExample.cs" />
     <Compile Include="Entities\Players\UpperDefender.cs" />
