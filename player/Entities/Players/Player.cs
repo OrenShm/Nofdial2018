@@ -128,7 +128,7 @@ namespace RoboCup
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("Exception in wait step: " + e.Message);
             }
         }
 
@@ -194,6 +194,7 @@ namespace RoboCup
             }
             catch (Exception e)
             {
+                Console.WriteLine("Exception in go to coordinate: " + e.Message);
                 return false;
             }
         }
@@ -271,6 +272,7 @@ namespace RoboCup
             }
             catch (Exception e)
             {
+                Console.WriteLine("Exception in go to coordinate: " + e.Message);
                 return false;
             }
 
@@ -313,22 +315,45 @@ namespace RoboCup
             return GetDistanceToPoint(m_startPosition);
         }
 
-        public PointF GetMostForwardPlayerPossition()
+        public PointF? GetMostForwardPlayerPossition()
         {
-            PointF mostForwardPos = new PointF(-30, 0);
+            PointF? mostForwardPos = null;
             var seenObjects = m_coach.GetSeenCoachObjects();
             foreach (var seenObject in seenObjects)
             {
                 if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
                 {
-                    if (seenObject.Value.Pos.Value.X >  mostForwardPos.X)
+                    if (mostForwardPos == null)
                     {
                         mostForwardPos = seenObject.Value.Pos.Value;
                     }
-
+                    else
+                    {
+                        if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                        {
+                            mostForwardPos = seenObject.Value.Pos.Value;
+                        }
+                    }
                 }
             }
             return mostForwardPos;
+        }
+
+        public void GoToOriginSynced()
+        {
+            while (!goToCoordinate(m_startPosition, 1))
+            {
+                WaitSimulatorStep();
+            }
+        }
+
+        public void RushBallSynced()
+        {
+            while (true)
+            {
+                if (goToBallCoordinates(1.5, m_sideFactor * 3)) break;
+                WaitSimulatorStep();
+            }
         }
 
         //---------------------------Private Utils------------------------------

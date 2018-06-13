@@ -40,19 +40,42 @@ namespace RoboCup
                         GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION ||
                         GetMyPlayerDetailsByCoach().Pos.Value.Y > MOST_HEIGHT_DISTANCE)
                     {
-                        GoToOriginSynced();
+                        //GoToOriginSynced();
+                        goToCoordinate(m_startPosition, 1);
+                        WaitSimulatorStep();
                     }
                     else
                     {
-                        RushBallSynced();
+                        //RushBallSynced();
+                        if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
+                        {
+                            WaitSimulatorStep();
+                            continue;
+                        }
+
                         if (GetMyPlayerDetailsByCoach().Pos.Value.X > 0)
                         {
-                            PassToPossition(GetMostForwardPlayerPossition());
+                            var mostForward = GetMostForwardPlayerPossition();
+                            if (mostForward == null)
+                            {
+                                m_robot.Kick(100, GetAngleToOpponentGoal());
+                            }
+                            else
+                            {
+                                PassToPossition((PointF)mostForward);
+                            }
+                        }
+                        else
+                        {
+                            m_robot.Kick(20, 0);
+                            WaitSimulatorStep();
                         }
                     }
                 }
                 catch (Exception e)
-                { }
+                {
+                    Console.WriteLine("Exception in upper main loop: " + e.Message);
+                }
             }
 
 
@@ -61,24 +84,6 @@ namespace RoboCup
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
             //WaitSimulatorStep();
-        }
-
-        private void RushBallSynced()
-        {
-            while (true)
-            {
-
-                if (goToBallCoordinates(1, 1)) break;
-                WaitSimulatorStep();
-            }
-        }
-
-        private void GoToOriginSynced()
-        {
-            while (!goToCoordinate(m_startPosition, 1))
-            {
-                WaitSimulatorStep();
-            }
         }
 
         private SenseBodyInfo GetBodyInfo()
