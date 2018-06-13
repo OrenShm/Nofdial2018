@@ -110,6 +110,15 @@ namespace RoboCup
 
         private void KickOrMoveWithBall(SeenCoachObject player, double power, double distanceToBall, double directiontoGoal, SeenCoachObject ball)
         {
+            if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+            {
+                directiontoGoal = GetAngleToOpponentGoalLow();
+            }
+            else
+            {
+                directiontoGoal = GetAngleToOpponentGoalUp();
+            }
+
             if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
             {
                 PointF point;
