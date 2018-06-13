@@ -22,7 +22,7 @@ namespace RoboCup
         public LowerAttackerExample(Team team, ICoach coach) 
             : base(team, coach)
         {
-            m_startPosition = new PointF(m_sideFactor * 11, 15);
+            m_startPosition = new PointF(m_sideFactor * -1,15);
         }
 
 
@@ -40,13 +40,25 @@ namespace RoboCup
 
                     if (ball != null)
                     {
-                        if (ball.Pos.Value.X < -10 || player.Pos.Value.Y < -5)
+                        if (m_side == 'l')
                         {
-                            goToCoordinate(m_startPosition, 1);
-                            WaitSimulatorStep();
+                            if (ball.Pos.Value.X < -10 || player.Pos.Value.Y < -5)
+                            {
+                                goToCoordinate(m_startPosition, 1);
+                                WaitSimulatorStep();
+                                continue;
+                            }
                         }
                         else
                         {
+                            if (ball.Pos.Value.X < 10 || player.Pos.Value.Y > 5)
+                            {
+                                goToCoordinate(m_startPosition, 1);
+                                WaitSimulatorStep();
+                                continue;
+                            }
+                        }
+
                             var distanceToBall = GetDistanceToPoint(ball.Pos.Value);
 
                             if (NearBoal(distanceToBall))
@@ -60,7 +72,6 @@ namespace RoboCup
                         }
                         
                     }
-                }
                 catch (Exception e)
                 {
 
@@ -102,11 +113,25 @@ namespace RoboCup
         {
             if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
             {
-                PointF point = new PointF()
+                PointF point;
+                if (m_side == 'l')
                 {
-                    X = ball.Pos.Value.X ,
-                    Y = ball.Pos.Value.Y + 10
-                };
+                    point = new PointF()
+                    {
+                        X = ball.Pos.Value.X,
+                        Y = ball.Pos.Value.Y + 10
+                    };
+                }
+                else
+                {
+                    point = new PointF()
+                    {
+                        X = ball.Pos.Value.X +3,
+                        Y = ball.Pos.Value.Y - 10
+                    };
+                }
+
+                
                 goToCoordinate(point,0);
             }
           else if (NearBoal(distanceToBall))
