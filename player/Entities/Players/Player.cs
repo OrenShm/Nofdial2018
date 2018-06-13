@@ -52,6 +52,8 @@ namespace RoboCup
  
         }
 
+        //------------------------------Public util functions---------------------
+
         public SeenCoachObject GetMyPlayerDetailsByCoach()
         {
             var res =  m_coach.GetSeenCoachObject($"player {m_team.m_teamName} {m_number}");
@@ -62,10 +64,7 @@ namespace RoboCup
             return res;
         }
 
-        private double Calc2PointsAngleByXAxis(PointF start, PointF end)
-        {
-            return Math.Atan2(start.Y - end.Y, end.X - start.X) * Rad2Deg;
-        }
+
 
         public double GetAngleToPoint(PointF targetPoint)
         {
@@ -75,30 +74,35 @@ namespace RoboCup
             var angleToTarget = Calc2PointsAngleByXAxis(myPosByCoach.Pos.Value, targetPoint);
             var myAbsAngle = myPosByCoach.BodyAngle;
 
-            Console.WriteLine($"myGolbalAngle: {myAbsAngle}");
+            Console.WriteLine($"myAbsAngle: {myAbsAngle}");
             Console.WriteLine($"angleToTarget: {angleToTarget}");
 
-            var turnAngle = -1*(Convert.ToDouble(myAbsAngle) + angleToTarget) % 360;
+            var turnAngle = -1 * (Convert.ToDouble(myAbsAngle) + angleToTarget);
             Console.WriteLine($"turnAngle: {turnAngle}");
 
-            var fixedAngle = turnAngle;
-
-            if (Math.Abs(fixedAngle) > 180)
-            {
-                if (fixedAngle > 180)
-                {
-                    fixedAngle = fixedAngle - 360;
-                }
-                else
-                {
-                    fixedAngle = fixedAngle + 360;
-                }
-            }
+            var fixedAngle = NormalizeTo180(turnAngle);
             Console.WriteLine($"fixedAngle: {fixedAngle}");
 
 
             return turnAngle;
         }
+
+        //TODO: Check!
+        public double AngelTo0()
+        {
+            var myPosByCoach = GetMyPlayerDetailsByCoach();
+            var myAbsAngle = myPosByCoach.BodyAngle;
+            myAbsAngle = -1 * myAbsAngle;
+            return NormalizeTo180(Convert.ToDouble(myAbsAngle));
+        }
+
+
+        //--------------------------Higher Level API-------------------------
+        public void TurnToAngle0()
+        {
+            m_robot.Turn(AngelTo0());
+        }
+
 
         /// <summary>
         /// Goes to requested coordinate
@@ -128,7 +132,28 @@ namespace RoboCup
 
         }
 
+        //---------------------------Private Utils------------------------------
+        private static double Calc2PointsAngleByXAxis(PointF start, PointF end)
+        {
+            return Math.Atan2(start.Y - end.Y, end.X - start.X) * Rad2Deg;
+        }
 
+        private static double NormalizeTo180(double angle)
+        {
+            while (Math.Abs(angle) > 180)
+            {
+                if (angle > 0)
+                {
+                    angle = angle - 360;
+                }
+                else
+                {
+                    angle = angle + 360;
+                }
+            }
+
+            return angle;
+        }
 
     }
 }
