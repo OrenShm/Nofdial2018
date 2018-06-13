@@ -137,7 +137,7 @@ namespace RoboCup
         /// </summary>
         /// <param name="point"></param>
         /// <returns> true in case we reached the requested pos, false otherwise</returns>
-        public bool goToCoordinate(PointF point, double trashHold)
+        public bool goToCoordinate(PointF point, double trashHold = DistFromBallToKick)
         {
             var dist = GetDistanceToPoint(point);
             if (dist < trashHold)
