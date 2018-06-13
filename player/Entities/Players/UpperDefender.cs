@@ -26,7 +26,14 @@ namespace RoboCup
             // first ,over to start position
             m_robot.Move(m_startPosition.X, m_startPosition.Y);
             //Go to start possition in case the Move failed.
+            for (int i = 0; i < 3; i++)
+            {
+                goToCoordinate(new PointF(m_sideFactor * 10, -30), 1);
+                WaitSimulatorStep();
+            }
+ 
             GoToOriginSynced();
+
             while (!m_timeOver)
             {
                 try
@@ -55,7 +62,14 @@ namespace RoboCup
                                 double angle = 0.0;
                                 if (GetDistanceToOpponentGoal() < 10)
                                 {
-                                    angle = GetAngleToOpponentGoalUp();
+                                    if(GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+                                    {
+                                        angle = GetAngleToOpponentGoalLow();
+                                    }
+                                    else
+                                    {
+                                        angle = GetAngleToOpponentGoalUp();
+                                    }
                                 }
                                 else
                                 {

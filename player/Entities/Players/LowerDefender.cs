@@ -61,18 +61,20 @@ namespace RoboCup
                                 double angle = 0.0;
                                 if (GetDistanceToOpponentGoal() < 10)
                                 {
-                                    angle = GetAngleToOpponentGoalUp();
+                                    if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+                                    {
+                                        angle = GetAngleToOpponentGoalLow();
+                                    }
+                                    else
+                                    {
+                                        angle = GetAngleToOpponentGoalUp();
+                                    }
                                 }
                                 else
                                 {
                                     angle = GetAngleToOpponentGoal();
                                 }
                                 m_robot.Kick(100, angle);
-                                WaitSimulatorStep();
-                            }
-                            else
-                            {
-                                PassToPossition((PointF)GetMostForwardPlayerPossition());
                                 WaitSimulatorStep();
                             }
                         }
