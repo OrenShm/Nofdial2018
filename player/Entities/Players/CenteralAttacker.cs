@@ -1,24 +1,28 @@
 ﻿using RoboCup.Entities;
+using RoboCup.Infrastructure;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace RoboCup
 {
-    public class UpperDefender : Player
+    public class CenteralAttacker : Player
     {
         private const int WORKING_AREA = 30;
-        private const int MOST_FORWARD_POSSITION = 5;
-        private const int MOST_HEIGHT_DISTANCE = 15;
+        private const int MOST_BACK_POSSITION = -10;
 
 
         private const int WAIT_FOR_MSG_TIME = 10;
 
 
-        public UpperDefender(Team team, ICoach coach)
+        public CenteralAttacker(Team team, ICoach coach)
             : base(team, coach)
         {
-            m_startPosition = new PointF(m_sideFactor * 30, -20);
+            m_startPosition = new PointF(m_sideFactor * 5, 10);
         }
 
         public override void play()
@@ -32,8 +36,7 @@ namespace RoboCup
                 try
                 {
                     if (GetDistanceToBall() > WORKING_AREA ||
-                        GetMyPlayerDetailsByCoach().Pos.Value.Y > MOST_HEIGHT_DISTANCE ||
-                        (GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION) && !AmIMostForwarded())
+                        GetMyPlayerDetailsByCoach().Pos.Value.X < MOST_BACK_POSSITION)
                     {
                         //GoToOriginSynced();
                         goToCoordinate(m_startPosition, 1);
@@ -48,38 +51,21 @@ namespace RoboCup
                             continue;
                         }
                         //WaitSimulatorStep();
-                        if (GetMyPlayerDetailsByCoach().Pos.Value.X > 0)
-                        {
-                            if (AmIMostForwarded())
-                            {
-                                double angle = 0.0;
-                                if (GetDistanceToOpponentGoal() < 10)
-                                {
-                                    angle = GetAngleToOpponentGoalUp();
-                                }
-                                else
-                                {
-                                    angle = GetAngleToOpponentGoal();
-                                }
-                                m_robot.Kick(100, angle);
-                                WaitSimulatorStep();
-                            }
-                            else
-                            {
-                                PassToPossition((PointF)GetMostForwardPlayerPossition());
-                                WaitSimulatorStep();
-                            }
-                        }
                         else
                         {
-                            m_robot.Kick(30, 0);
-                            WaitSimulatorStep();
+                            double angleRand = 0.0;
+                            if (GetDistanceToOpponentGoal() < 10)
+                            {
+                                angleRand = 10;
+                            }
+                            m_robot.Kick(100, GetAngleToOpponentGoal() + angleRand);
+
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Exception in upper main loop: " + e.Message);
+                    Console.WriteLine("Exception in lower main loop: " + e.Message);
                 }
             }
 
