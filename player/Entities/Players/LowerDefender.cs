@@ -37,8 +37,9 @@ namespace RoboCup
                 try
                 {
                     if (GetDistanceToBall() > WORKING_AREA ||
-                        GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION ||
-                        GetMyPlayerDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE)
+                        GetMyPlayerDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE ||
+                        ( GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION ) && !AmIMostForwarded())
+
                     {
                         //GoToOriginSynced();
                         goToCoordinate(m_startPosition, 1);
@@ -55,19 +56,29 @@ namespace RoboCup
                         //WaitSimulatorStep();
                         if (GetMyPlayerDetailsByCoach().Pos.Value.X > 0)
                         {
-                            var mostForward = GetMostForwardPlayerPossition();
-                            if (mostForward == null)
+                            if (AmIMostForwarded())
                             {
-                                m_robot.Kick(100, GetAngleToOpponentGoal());
+                                double angle = 0.0;
+                                if (GetDistanceToOpponentGoal() < 10)
+                                {
+                                    angle = GetAngleToOpponentGoalUp();
+                                }
+                                else
+                                {
+                                    angle = GetAngleToOpponentGoal();
+                                }
+                                m_robot.Kick(100, angle);
+                                WaitSimulatorStep();
                             }
                             else
                             {
-                                PassToPossition((PointF)mostForward);
+                                PassToPossition((PointF)GetMostForwardPlayerPossition());
+                                WaitSimulatorStep();
                             }
                         }
                         else
                         {
-                            m_robot.Kick(20, 0);
+                            m_robot.Kick(30, 0);
                             WaitSimulatorStep();
                         }
                     }

@@ -66,6 +66,11 @@ namespace RoboCup
             return res;
         }
 
+        public string GetMyPlayerName()
+        {
+            return $"player {m_team.m_teamName} {m_number}";
+        }
+
         public SeenCoachObject GetBallDetailsByCoach()
         {
             var res = m_coach.GetSeenCoachObject($"ball");
@@ -382,6 +387,38 @@ namespace RoboCup
                 }
             }
             return mostForwardPos;
+        }
+
+        public string GetMostForwardPlayerName()
+        {
+            PointF? mostForwardPos = null;
+            string mostForwardName = null ;
+            var seenObjects = m_coach.GetSeenCoachObjects();
+            foreach (var seenObject in seenObjects)
+            {
+                if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
+                {
+                    if (mostForwardPos == null)
+                    {
+                        mostForwardName = seenObject.Value.Name;
+                        mostForwardPos = seenObject.Value.Pos.Value;
+                    }
+                    else
+                    {
+                        if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                        {
+                            mostForwardName = seenObject.Value.Name;
+                            mostForwardPos = seenObject.Value.Pos.Value;
+                        }
+                    }
+                }
+            }
+            return mostForwardName;
+        }
+
+        public bool AmIMostForwarded()
+        {
+            return GetMyPlayerName() == GetMostForwardPlayerName();
         }
 
         public void GoToOriginSynced()
