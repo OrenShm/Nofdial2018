@@ -158,15 +158,18 @@ namespace RoboCup
                         //Console.WriteLine($"Ball Position {ballPosByCoach.Pos.Value.X}, {ballPosByCoach.Pos.Value.Y}");
                     }
 
+                    //GetDistanceToBall();
+
                     m_memory.waitForNewInfo();
-                    ball = m_memory.GetSeenObject("ball");
-                    if (ball == null)
-                    {
-                        // If you don't know where is ball then find it
-                        m_robot.Turn(40);
-                        m_memory.waitForNewInfo();
-                    }
-                    else if (ball.Distance > 1.5)
+                    //ball = m_memory.GetSeenObject("ball");
+                    //if (ball == null)
+                    //{
+                    //    // If you don't know where is ball then find it
+                    //    m_robot.Turn(40);
+                    //    m_memory.waitForNewInfo();
+                    //}
+                    //else if (ball.Distance > 1.5)
+                    if (GetDistanceToBall() > 1.5)
                     {
                         if (ballPosByCoach != null && ballPosByCoach.Pos != null)
                         {
@@ -190,6 +193,15 @@ namespace RoboCup
                     }
                     else  // ball.Distance <= 1.5, so we can catch the ball.
                     {
+                        ball = m_memory.GetSeenObject("ball");
+                        while (ball == null)
+                        {
+                            // If you don't know where is ball then find it
+                            m_robot.Turn(40);
+                            m_memory.waitForNewInfo();
+                            Thread.Sleep(SoccerParams.simulator_step);
+                            ball = m_memory.GetSeenObject("ball");
+                        }
                         m_robot.Catch(ball.Direction.Value);
                         Thread.Sleep(SoccerParams.simulator_step);
                         TurnToAngle0();
