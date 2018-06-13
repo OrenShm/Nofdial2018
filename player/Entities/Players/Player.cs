@@ -10,6 +10,8 @@ namespace RoboCup
 
     public class Player : IPlayer
     {
+       const double DistFromBallToKick = 1.7;
+
         const double Rad2Deg = 180.0 / Math.PI;
         const double Deg2Rad = Math.PI / 180.0;
         // Protected members
@@ -135,10 +137,10 @@ namespace RoboCup
         /// </summary>
         /// <param name="point"></param>
         /// <returns> true in case we reached the requested pos, false otherwise</returns>
-        public bool goToCoordinate(PointF point)
+        public bool goToCoordinate(PointF point, double distToPoint)
         {
             var dist = GetDistanceToPoint(point);
-            if (dist < 1)
+            if (dist < distToPoint)
             {
                 return true;
             }
@@ -158,13 +160,13 @@ namespace RoboCup
         /// 
         /// </summary>
         /// <returns>true in case we got to the ball</returns>
-        public bool goToBallCoordinates()
+        public bool goToBallCoordinates(double trashHold = 0)
         {
             var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
             var ballPosBySensors = m_memory.GetSeenObject("ball");
             if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
             {
-                return goToCoordinate(ballPosByCoach);
+                return goToCoordinate(ballPosByCoach, trashHold);
             }
             if (Math.Abs(ballPosBySensors.Direction.Value) > 10)
             {
@@ -181,10 +183,10 @@ namespace RoboCup
         /// </summary>
         /// <param name="targetPoint"></param>
         /// <returns>true when target is reached</returns>
-        public bool DashToPoint(PointF targetPoint)
+        public bool DashToPoint(PointF targetPoint, double trashHold)
         {
             double dist = GetDistanceToPoint(targetPoint);
-            if (dist < 1)
+            if (dist < trashHold)
             {
                 return true;
             }
