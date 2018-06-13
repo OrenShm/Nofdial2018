@@ -10,10 +10,10 @@ namespace RoboCup
 
     public class Player : IPlayer
     {
-       const double DistFromBallToKick = 1.7;
+        protected const double DistFromBallToKick = 1.7;
 
-        const double Rad2Deg = 180.0 / Math.PI;
-        const double Deg2Rad = Math.PI / 180.0;
+        protected const double Rad2Deg = 180.0 / Math.PI;
+        protected const double Deg2Rad = Math.PI / 180.0;
         // Protected members
         protected Robot m_robot;			    // robot which is controled by this brain
         protected Memory m_memory;				// place where all information is stored
@@ -137,10 +137,10 @@ namespace RoboCup
         /// </summary>
         /// <param name="point"></param>
         /// <returns> true in case we reached the requested pos, false otherwise</returns>
-        public bool goToCoordinate(PointF point, double distToPoint)
+        public bool goToCoordinate(PointF point, double trashHold)
         {
             var dist = GetDistanceToPoint(point);
-            if (dist < distToPoint)
+            if (dist < trashHold)
             {
                 return true;
             }
@@ -152,7 +152,7 @@ namespace RoboCup
             }
             else
             {
-                return DashToPoint(point);
+                return DashToPoint(point, trashHold);
             }
         }
 
@@ -174,7 +174,7 @@ namespace RoboCup
                 return false;
             }
             var myPlayerDetails = GetMyPlayerDetailsByCoach();
-            return DashToPoint(ballPosByCoach);
+            return DashToPoint(ballPosByCoach, trashHold);
 
         }
 
