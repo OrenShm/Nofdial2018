@@ -69,6 +69,7 @@
     <Compile Include="Entities\Formations\Formation_4_4_2.cs" />
     <Compile Include="Entities\Formations\IFormation.cs" />
     <Compile Include="Entities\ICoach.cs" />
+    <Compile Include="Entities\Players\LowerDefender.cs" />
     <Compile Include="Entities\Players\UpperDefender.cs" />
     <Compile Include="Entities\Players\Defenders\Defender.cs" />
     <Compile Include="Entities\Players\Dummy.cs" />

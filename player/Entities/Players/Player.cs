@@ -247,11 +247,16 @@ namespace RoboCup
         /// 
         /// </summary>
         /// <returns>true in case we got to the ball</returns>
-        public bool goToBallCoordinates(double trashHold)
+        public bool goToBallCoordinates(double trashHold, float beforeBallDistance = 0)
         {
             try
             {
                 var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
+                var myPosByCoach = GetMyPlayerDetailsByCoach().Pos.Value;
+                if (ballPosByCoach.X < myPosByCoach.X)
+                {
+                    ballPosByCoach.X -= beforeBallDistance;
+                }
                 var ballPosBySensors = m_memory.GetSeenObject("ball");
                 if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
                 {
@@ -306,6 +311,24 @@ namespace RoboCup
         public double GetDistanceToMyOrigin()
         {
             return GetDistanceToPoint(m_startPosition);
+        }
+
+        public PointF GetMostForwardPlayerPossition()
+        {
+            PointF mostForwardPos = new PointF(-30, 0);
+            var seenObjects = m_coach.GetSeenCoachObjects();
+            foreach (var seenObject in seenObjects)
+            {
+                if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
+                {
+                    if (seenObject.Value.Pos.Value.X >  mostForwardPos.X)
+                    {
+                        mostForwardPos = seenObject.Value.Pos.Value;
+                    }
+
+                }
+            }
+            return mostForwardPos;
         }
 
         //---------------------------Private Utils------------------------------
