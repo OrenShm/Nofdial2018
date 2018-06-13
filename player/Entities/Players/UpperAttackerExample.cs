@@ -51,7 +51,7 @@ namespace RoboCup
                         }
                         else
                         {
-                            if (ball.Pos.Value.X > 10 || player.Pos.Value.Y > 5)
+                            if (player.Pos.Value.X > 10 || player.Pos.Value.Y > 5)
                             {
                                 goToCoordinate(m_startPosition, 1);
                                 WaitSimulatorStep();
@@ -110,13 +110,16 @@ namespace RoboCup
 
         private void KickOrMoveWithBall(SeenCoachObject player, double power, double distanceToBall, double directiontoGoal, SeenCoachObject ball)
         {
-            if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+            if (m_side == 'l')
             {
-                directiontoGoal = GetAngleToOpponentGoalLow();
-            }
-            else
-            {
-                directiontoGoal = GetAngleToOpponentGoalUp();
+                if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+                {
+                    directiontoGoal = GetAngleToOpponentGoalLow();
+                }
+                else
+                {
+                    directiontoGoal = GetAngleToOpponentGoalUp();
+                }
             }
 
             if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
