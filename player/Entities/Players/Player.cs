@@ -122,7 +122,7 @@ namespace RoboCup
             }
             else
             {
-                m_robot.Dash(Math.Max(100, 20 * dist));
+                m_robot.Dash(Math.Min(100, 20 * dist));
             }
             return false;
 
