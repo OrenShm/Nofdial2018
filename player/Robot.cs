@@ -97,7 +97,9 @@ namespace RoboCup
             {
                 message = receive();
                 //Console.WriteLine($"Received: {message}");
-                
+                //Console.WriteLine($"Received:{DateTime.UtcNow} {message}");  // DROR - DEBUG CATCH FLAG
+
+
                 // First check kind of information		
                 if (message.StartsWith("(see"))
                 {

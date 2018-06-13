@@ -198,6 +198,51 @@ namespace RoboCup
             }
         }
 
+        public bool goToCoordinate(PointF point, double trashHold, PointF topLimitPoint, PointF BottomLimitPoint)
+        {
+            PointF limitedPoint = point;
+            if (m_side == 'l')
+            {
+                if (point.X > topLimitPoint.X)
+                {
+                    limitedPoint.X = topLimitPoint.X;
+                }
+            }
+            else
+            {
+                if (point.X < topLimitPoint.X)
+                {
+                    limitedPoint.X = topLimitPoint.X;
+                }
+            }
+
+            if (point.Y < topLimitPoint.Y)
+            {
+                limitedPoint.Y = topLimitPoint.Y;
+            }
+            else if (point.Y > BottomLimitPoint.Y)
+            {
+                limitedPoint.Y = BottomLimitPoint.Y;
+            }
+            
+
+            var dist = GetDistanceToPoint(limitedPoint);
+            if (dist < trashHold)
+            {
+                return true;
+            }
+            var turnAngle = GetAngleToPoint(limitedPoint);
+            if (Math.Abs(turnAngle) > 10)
+            {
+                m_robot.Turn(turnAngle);
+                return false;
+            }
+            else
+            {
+                return DashToPoint(limitedPoint, trashHold);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
