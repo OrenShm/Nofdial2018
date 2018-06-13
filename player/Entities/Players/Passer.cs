@@ -32,10 +32,8 @@ namespace RoboCup
                     var ball = m_coach.GetSeenCoachObject("ball");
                     if (ball != null)
                     {
-                        goToCoordinate(ball.Pos.Value,1);
-
+                        goToCoordinate(ball.Pos.Value, DistFromBallToKick);
                     }
-
                 }
                 catch (Exception e)
                 {
