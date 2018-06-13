@@ -79,7 +79,7 @@ namespace RoboCup
 
         public double GetAngleToPoint(PointF targetPoint)
         {
-            Console.WriteLine("----------------------------------------");
+            //Console.WriteLine("----------------------------------------");
 
             var myPosByCoach = GetMyPlayerDetailsByCoach();
             var angleToTarget = Calc2PointsAngleByXAxis(myPosByCoach.Pos.Value, targetPoint);
@@ -121,6 +121,29 @@ namespace RoboCup
         }
 
         //--------------------------Higher Level API-------------------------
+        public bool PassToPossition(PointF targetPoint)
+        {
+            if (GetDistanceToBall() > DistFromBallToKick)
+            {
+                throw new Exception("Too far from ball to shot");
+            }
+            var dist = GetDistanceToPoint(targetPoint);
+           
+            if (dist > 30) //Too far, shot at max power
+            {
+                m_robot.Kick(100, GetAngleToPoint(targetPoint));
+            }
+            else if (dist > 10)
+            {
+                m_robot.Kick(Math.Min(100, GetDistanceToPoint(targetPoint) * 7), GetAngleToPoint(targetPoint));
+            }
+            else //Very close
+            {
+                m_robot.Kick(Math.Min(100, GetDistanceToPoint(targetPoint) * 3), GetAngleToPoint(targetPoint));
+            }
+            return true;
+        }
+
         public void TurnToAngle0()
         {
             m_robot.Turn(GetAngleTo0());
@@ -160,7 +183,7 @@ namespace RoboCup
         /// 
         /// </summary>
         /// <returns>true in case we got to the ball</returns>
-        public bool goToBallCoordinates(double trashHold = 0)
+        public bool goToBallCoordinates(double trashHold)
         {
             var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
             var ballPosBySensors = m_memory.GetSeenObject("ball");
@@ -173,7 +196,6 @@ namespace RoboCup
                 m_robot.Turn(ballPosBySensors.Direction.Value);
                 return false;
             }
-            var myPlayerDetails = GetMyPlayerDetailsByCoach();
             return DashToPoint(ballPosByCoach, trashHold);
 
         }
@@ -197,7 +219,17 @@ namespace RoboCup
         public double GetDistanceToPoint(PointF targetPoint)
         {
             var myPlayerDetails = GetMyPlayerDetailsByCoach();
-            return Math.Sqrt(Math.Pow(targetPoint.X - myPlayerDetails.Pos.Value.X, 2) + Math.Pow(targetPoint.Y - myPlayerDetails.Pos.Value.Y, 2));
+            return GetDistanceBetween2Points(myPlayerDetails.Pos.Value, targetPoint);
+        }
+
+        public double GetDistanceBetween2Points(PointF sourcePoint, PointF targetPoint)
+        {
+            return Math.Sqrt(Math.Pow(sourcePoint.X - targetPoint.X, 2) + Math.Pow(sourcePoint.Y - targetPoint.Y, 2));
+        }
+
+        public double GetDistanceToBall()
+        {
+            return GetDistanceToPoint(GetBallDetailsByCoach().Pos.Value);
         }
 
         //---------------------------Private Utils------------------------------

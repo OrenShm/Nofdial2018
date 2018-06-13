@@ -27,6 +27,43 @@ namespace RoboCup
 
             while (!m_timeOver)
             {
+                while (true)
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            if (goToBallCoordinates(1)) break;
+                            WaitSimulatorStep();
+
+                        }
+                        catch (Exception e) { }
+                    }
+                    var targetPos = (PointF)FlagNameToPointF.Convert("flag c b");
+                    targetPos.Y -= 1;
+
+                    PassToPossition(targetPos);
+                    WaitSimulatorStep();
+                    var dist = GetDistanceBetween2Points(
+                        (PointF)FlagNameToPointF.Convert("flag c b"),
+                        GetBallDetailsByCoach().Pos.Value);
+                    if (dist < 1)
+                        break;
+                }
+
+                while (true)
+                {
+                    try
+                    {
+                        if (goToBallCoordinates(1)) break;
+                        WaitSimulatorStep();
+
+                    }
+                    catch (Exception e) { }
+                }
+                PassToPossition(((PointF)FlagNameToPointF.Convert("flag c")));
+
+
                 SeenObject ball = null;
                 SeenObject goal = null;
 
@@ -85,6 +122,11 @@ namespace RoboCup
 
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
+            WaitSimulatorStep();
+        }
+
+        private static void WaitSimulatorStep()
+        {
             try
             {
                 Thread.Sleep(SoccerParams.simulator_step);
