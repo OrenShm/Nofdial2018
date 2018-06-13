@@ -64,6 +64,15 @@ namespace RoboCup
             return res;
         }
 
+        public SeenCoachObject GetBallDetailsByCoach()
+        {
+            var res = m_coach.GetSeenCoachObject($"ball");
+            if (res == null)
+            {
+                throw new Exception("Couldn't find the ball");
+            }
+            return res;
+        }
 
 
         public double GetAngleToPoint(PointF targetPoint)
@@ -74,21 +83,20 @@ namespace RoboCup
             var angleToTarget = Calc2PointsAngleByXAxis(myPosByCoach.Pos.Value, targetPoint);
             var myAbsAngle = myPosByCoach.BodyAngle;
 
-            Console.WriteLine($"myAbsAngle: {myAbsAngle}");
-            Console.WriteLine($"angleToTarget: {angleToTarget}");
+            //Console.WriteLine($"myAbsAngle: {myAbsAngle}");
+            //Console.WriteLine($"angleToTarget: {angleToTarget}");
 
             var turnAngle = -1 * (Convert.ToDouble(myAbsAngle) + angleToTarget);
-            Console.WriteLine($"turnAngle: {turnAngle}");
+            //Console.WriteLine($"turnAngle: {turnAngle}");
 
             var fixedAngle = NormalizeTo180(turnAngle);
-            Console.WriteLine($"fixedAngle: {fixedAngle}");
+            //Console.WriteLine($"fixedAngle: {fixedAngle}");
 
 
             return turnAngle;
         }
 
-        //TODO: Check!
-        public double AngelTo0()
+        public double GetAngleTo0()
         {
             var myPosByCoach = GetMyPlayerDetailsByCoach();
             var myAbsAngle = myPosByCoach.BodyAngle;
@@ -96,13 +104,30 @@ namespace RoboCup
             return NormalizeTo180(Convert.ToDouble(myAbsAngle));
         }
 
+        public double GetAngleToOpponentGoal()
+        {
+            PointF opponentGoalPos;
+            if (m_side == 'l')
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal r");
+            }
+            else
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal l");
+            }
+            return GetAngleToPoint(opponentGoalPos);
+        }
 
         //--------------------------Higher Level API-------------------------
         public void TurnToAngle0()
         {
-            m_robot.Turn(AngelTo0());
+            m_robot.Turn(GetAngleTo0());
         }
 
+        public void TurnToOpponentGoal()
+        {
+            m_robot.Turn(GetAngleToOpponentGoal());
+        }
 
         /// <summary>
         /// Goes to requested coordinate
@@ -112,9 +137,7 @@ namespace RoboCup
         /// <returns> true in case we reached the requested pos, false otherwise</returns>
         public bool goToCoordinate(PointF point)
         {
-            var myPlayerDetails = GetMyPlayerDetailsByCoach();
-
-            var dist = Math.Sqrt(Math.Pow(point.X - myPlayerDetails.Pos.Value.X, 2) + Math.Pow(point.Y - myPlayerDetails.Pos.Value.Y, 2));
+            var dist = GetDistanceToPoint(point);
             if (dist < 1)
             {
                 return true;
@@ -123,13 +146,56 @@ namespace RoboCup
             if (Math.Abs(turnAngle) > 10)
             {
                 m_robot.Turn(turnAngle);
+                return false;
             }
             else
             {
-                m_robot.Dash(Math.Min(100, 20 * dist));
+                return DashToPoint(point);
             }
-            return false;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true in case we got to the ball</returns>
+        public bool goToBallCoordinates()
+        {
+            var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
+            var ballPosBySensors = m_memory.GetSeenObject("ball");
+            if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
+            {
+                return goToCoordinate(ballPosByCoach);
+            }
+            if (Math.Abs(ballPosBySensors.Direction.Value) > 10)
+            {
+                m_robot.Turn(ballPosBySensors.Direction.Value);
+                return false;
+            }
+            var myPlayerDetails = GetMyPlayerDetailsByCoach();
+            return DashToPoint(ballPosByCoach);
+
+        }
+
+        /// <summary>
+        /// Dashes to targetPoint.
+        /// </summary>
+        /// <param name="targetPoint"></param>
+        /// <returns>true when target is reached</returns>
+        public bool DashToPoint(PointF targetPoint)
+        {
+            double dist = GetDistanceToPoint(targetPoint);
+            if (dist < 1)
+            {
+                return true;
+            }
+            m_robot.Dash(Math.Min(100, 20 * dist));
+            return false;
+        }
+
+        public double GetDistanceToPoint(PointF targetPoint)
+        {
+            var myPlayerDetails = GetMyPlayerDetailsByCoach();
+            return Math.Sqrt(Math.Pow(targetPoint.X - myPlayerDetails.Pos.Value.X, 2) + Math.Pow(targetPoint.Y - myPlayerDetails.Pos.Value.Y, 2));
         }
 
         //---------------------------Private Utils------------------------------
