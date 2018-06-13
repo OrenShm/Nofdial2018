@@ -73,7 +73,42 @@ namespace RoboCup
             }
             return bottomLimitPoint;
         }
-
+        private PointF CalcRelativePossition(PointF ballPoint)
+        {
+            SeenCoachObject playerPossition = m_coach.GetSeenCoachObject("player " + m_team.m_teamName + " " + m_number);
+            if (m_side == 'l')
+            {
+                if(playerPossition.Pos.Value.X > ballPoint.X)
+                {
+                    if (ballPoint.X - 2 < -57)
+                    {
+                        PointF opponentGoalPos = (PointF)FlagNameToPointF.Convert("flag l t");
+                        ballPoint.X = -57;
+                    }
+                    else
+                    {
+                        ballPoint.X -= 2;
+                    }
+                    ballPoint.Y -= 5;
+                }
+            }
+            else
+            {
+                if (playerPossition.Pos.Value.X < ballPoint.X)
+                {
+                    if (ballPoint.X + 2 > 57)
+                    {
+                        ballPoint.X = 57;
+                    }
+                    else
+                    {
+                        ballPoint.X += 2;
+                    }
+                    ballPoint.Y += 5;
+                }
+            }
+            return ballPoint;
+        }
         public override void play()
         {
             // first ,ove to start position
@@ -128,7 +163,7 @@ namespace RoboCup
                     if (ball == null)
                     {
                         // If you don't know where is ball then find it
-                        m_robot.Turn(50);
+                        m_robot.Turn(40);
                         m_memory.waitForNewInfo();
                     }
                     else if (ball.Distance > 1.5)
@@ -140,6 +175,7 @@ namespace RoboCup
                             PointF bottomLimitPoint = GetBottomLimitPoint();
                             // Run to ball coordibates.
                             bool reachedCoordinate = goToCoordinate(new PointF(ballPosByCoach.Pos.Value.X, ballPosByCoach.Pos.Value.Y),1, topLimitPoint, bottomLimitPoint);
+                            //bool reachedCoordinate = goToCoordinate(CalcRelativePossition(new PointF(ballPosByCoach.Pos.Value.X, ballPosByCoach.Pos.Value.Y)),1, topLimitPoint, bottomLimitPoint);
                         }
                         else
                         {
@@ -161,8 +197,22 @@ namespace RoboCup
                         m_robot.Move(-40, 15);
                         Thread.Sleep(SoccerParams.simulator_step);
                         double angleTo0 = GetAngleTo0();
+                        double angleToBall = GetAngleToPoint(new PointF(ballPosByCoach.Pos.Value.X, ballPosByCoach.Pos.Value.Y));
+
+                        //Console.WriteLine($"BEFORE angleToBall: {angleToBall}");
+                        if ((angleToBall > 160) && (angleToBall < 200))
+                        {
+                            angleTo0 += 90;
+                        }
+                        else if ((angleToBall < -160) && (angleToBall > -200))
+                        {
+                            angleTo0 += 90;
+                        }
+
+
                         m_robot.Kick(100, angleTo0);
-                        Console.WriteLine($"Kick angleTo0: {angleTo0}");
+                        //Console.WriteLine($"Kick angleTo0: {angleTo0}");
+                        //Console.WriteLine($"angleToBall: {angleToBall}");
 
 
                     }
