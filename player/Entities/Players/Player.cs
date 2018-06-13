@@ -120,6 +120,18 @@ namespace RoboCup
             return GetAngleToPoint(opponentGoalPos);
         }
 
+        public static void WaitSimulatorStep()
+        {
+            try
+            {
+                Thread.Sleep(SoccerParams.simulator_step);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
         //--------------------------Higher Level API-------------------------
         public bool PassToPossition(PointF targetPoint)
         {
@@ -160,22 +172,29 @@ namespace RoboCup
         /// </summary>
         /// <param name="point"></param>
         /// <returns> true in case we reached the requested pos, false otherwise</returns>
-        public bool goToCoordinate(PointF point, double trashHold = DistFromBallToKick)
+        public bool goToCoordinate(PointF point, double trashHold)
         {
-            var dist = GetDistanceToPoint(point);
-            if (dist < trashHold)
+            try
             {
-                return true;
+                var dist = GetDistanceToPoint(point);
+                if (dist < trashHold)
+                {
+                    return true;
+                }
+                var turnAngle = GetAngleToPoint(point);
+                if (Math.Abs(turnAngle) > 10)
+                {
+                    m_robot.Turn(turnAngle);
+                    return false;
+                }
+                else
+                {
+                    return DashToPoint(point, trashHold);
+                }
             }
-            var turnAngle = GetAngleToPoint(point);
-            if (Math.Abs(turnAngle) > 10)
+            catch (Exception e)
             {
-                m_robot.Turn(turnAngle);
                 return false;
-            }
-            else
-            {
-                return DashToPoint(point, trashHold);
             }
         }
 
@@ -185,18 +204,25 @@ namespace RoboCup
         /// <returns>true in case we got to the ball</returns>
         public bool goToBallCoordinates(double trashHold)
         {
-            var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
-            var ballPosBySensors = m_memory.GetSeenObject("ball");
-            if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
+            try
             {
-                return goToCoordinate(ballPosByCoach, trashHold);
+                var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
+                var ballPosBySensors = m_memory.GetSeenObject("ball");
+                if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
+                {
+                    return goToCoordinate(ballPosByCoach, trashHold);
+                }
+                if (Math.Abs(ballPosBySensors.Direction.Value) > 10)
+                {
+                    m_robot.Turn(ballPosBySensors.Direction.Value);
+                    return false;
+                }
+                return DashToPoint(ballPosByCoach, trashHold);
             }
-            if (Math.Abs(ballPosBySensors.Direction.Value) > 10)
+            catch (Exception e)
             {
-                m_robot.Turn(ballPosBySensors.Direction.Value);
                 return false;
             }
-            return DashToPoint(ballPosByCoach, trashHold);
 
         }
 
@@ -230,6 +256,11 @@ namespace RoboCup
         public double GetDistanceToBall()
         {
             return GetDistanceToPoint(GetBallDetailsByCoach().Pos.Value);
+        }
+
+        public double GetDistanceToMyOrigin()
+        {
+            return GetDistanceToPoint(m_startPosition);
         }
 
         //---------------------------Private Utils------------------------------

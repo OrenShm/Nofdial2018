@@ -10,35 +10,41 @@ using System.Threading;
 
 namespace RoboCup
 {
-    public class DefenderExample : Player
+    public class UpperDefender : Player
     {
-        private const int WAIT_FOR_MSG_TIME = 10;
+        private const int WORKING_AREA = 30;
 
-        public DefenderExample(Team team, ICoach coach)
+        public UpperDefender(Team team, ICoach coach)
             : base(team, coach)
         {
-            m_startPosition = new PointF(m_sideFactor * 30, 0);
+            m_startPosition = new PointF(m_sideFactor * 30, -20);
         }
 
         public override void play()
         {
-            // first ,ove to start position
+            // first ,over to start position
             m_robot.Move(m_startPosition.X, m_startPosition.Y);
-
+            //Go to start possition in case the Move failed.
+            GoToOriginSynced();
             while (!m_timeOver)
             {
+                if (GetDistanceToBall() > WORKING_AREA)
+                {
+                    GoToOriginSynced();
+                }
+                else
+                {
+                    RushBallSynced();
+                //TODO: Continue
+                }
+
+
+
+
+
+
                 while (true)
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            if (goToBallCoordinates(1)) break;
-                            WaitSimulatorStep();
-
-                        }
-                        catch (Exception e) { }
-                    }
                     var targetPos = (PointF)FlagNameToPointF.Convert("flag c b");
                     targetPos.Y -= 1;
 
@@ -123,6 +129,24 @@ namespace RoboCup
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
             WaitSimulatorStep();
+        }
+
+        private void RushBallSynced()
+        {
+            while (true)
+            {
+
+                if (goToBallCoordinates(1)) break;
+                WaitSimulatorStep();
+            }
+        }
+
+        private void GoToOriginSynced()
+        {
+            while (!goToCoordinate(m_startPosition, 1))
+            {
+                WaitSimulatorStep();
+            }
         }
 
         private SenseBodyInfo GetBodyInfo()
