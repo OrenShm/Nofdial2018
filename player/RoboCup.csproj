@@ -88,7 +88,6 @@
     <Compile Include="Entities\Players\Midfielders\WideMidfielders.cs" />
     <Compile Include="Entities\Players\DefenderExample.cs" />
     <Compile Include="Entities\Players\LowerAttackerExample.cs" />
-    <Compile Include="Entities\Players\Passer.cs" />
     <Compile Include="Entities\Team.cs" />
     <Compile Include="Infrastructure\FieldLocations.cs" />
     <Compile Include="Infrastructure\FlagNameToPointF.cs" />
