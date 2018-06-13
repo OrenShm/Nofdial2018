@@ -10,13 +10,16 @@ using RoboCup.Infrastructure;
 
 namespace RoboCup
 {
-    public class AttackerExample : Player
+    public class UpperAttackerExample : Player
     {
+        private const int UpperBoundry = -34;
+        private const int LowerBoundry = 0;
+
         private const int WAIT_FOR_MSG_TIME = 10;
         private SeenCoachObject goal = null;
         private SeenCoachObject ballByCoach = null;
 
-        public AttackerExample(Team team, ICoach coach)
+        public UpperAttackerExample(Team team, ICoach coach)
             : base(team, coach)
         {
             m_startPosition = new PointF(m_sideFactor * 10, 0);
@@ -37,6 +40,12 @@ namespace RoboCup
 
                     if (ball != null)
                     {
+                        if (ball.Pos.Value.X < -10 || player.Pos.Value.Y <= 0)
+                        {
+
+                        }
+                        else
+                        {
                             var distanceToBall = GetDistanceToPoint(ball.Pos.Value);
 
                             if (NearBoal(distanceToBall))
@@ -47,6 +56,7 @@ namespace RoboCup
                             {
                                 goToCoordinate(ball.Pos.Value, DistFromBallToKick);
                             }
+                        }
 
                     }
                 }
@@ -94,7 +104,7 @@ namespace RoboCup
                 PointF point = new PointF()
                 {
                     X = ball.Pos.Value.X,
-                    Y = ball.Pos.Value.Y + 10
+                    Y = ball.Pos.Value.Y - 2
                 };
                 goToCoordinate(point, 0);
             }
