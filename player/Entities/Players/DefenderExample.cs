@@ -125,18 +125,6 @@ namespace RoboCup
             WaitSimulatorStep();
         }
 
-        private static void WaitSimulatorStep()
-        {
-            try
-            {
-                Thread.Sleep(SoccerParams.simulator_step);
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-
         private SenseBodyInfo GetBodyInfo()
         {
             m_robot.SenseBody();

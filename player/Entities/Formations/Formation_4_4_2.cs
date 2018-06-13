@@ -12,8 +12,13 @@ namespace RoboCup
         {
             var players = new List<Player>();
             players.Add(new Goalkeeper(team, coach));
-            //players.Add(new Dummy(team, coach));
-            //players.Add(new AttackerExample(team, coach));
+            players.Add(new AttackerExample(team, coach));
+           // players.Add(new UpperAttackerExample(team, coach));
+
+            players.Add(new UpperDefender(team, coach));
+            players.Add(new LowerDefender(team, coach));
+
+
             return players;
         }
     }

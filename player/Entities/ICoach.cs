@@ -9,5 +9,6 @@ namespace RoboCup.Entities
     public interface ICoach
     {
         SeenCoachObject GetSeenCoachObject(string name);
+        Dictionary<String, SeenCoachObject> GetSeenCoachObjects();
     }
 }
