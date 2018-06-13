@@ -292,7 +292,7 @@ namespace RoboCup
                 var myPosByCoach = GetMyPlayerDetailsByCoach().Pos.Value;
                 if (ballPosByCoach.X < myPosByCoach.X)
                 {
-                    ballPosByCoach.X -= beforeBallDistance;
+                    ballPosByCoach.X -= beforeBallDistance * m_sideFactor;
                 }
                 var ballPosBySensors = m_memory.GetSeenObject("ball");
                 if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
