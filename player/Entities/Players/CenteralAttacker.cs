@@ -53,7 +53,13 @@ namespace RoboCup
                         //WaitSimulatorStep();
                         else
                         {
-                            m_robot.Kick(100, GetAngleToOpponentGoal());
+                            double angleRand = 0.0;
+                            if (GetDistanceToOpponentGoal() < 10)
+                            {
+                                angleRand = 10;
+                            }
+                            m_robot.Kick(100, GetAngleToOpponentGoal() + angleRand);
+
                         }
                     }
                 }

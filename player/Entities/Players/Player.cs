@@ -120,6 +120,37 @@ namespace RoboCup
             return GetAngleToPoint(opponentGoalPos);
         }
 
+        public double GetAngleToOpponentGoalUp()
+        {
+            PointF opponentGoalPos;
+            if (m_side == 'l')
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal r");
+            }
+            else
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal l");
+            }
+            opponentGoalPos.Y -= 5;
+            return GetAngleToPoint(opponentGoalPos);
+        }
+
+        public double GetAngleToOpponentGoalLow()
+        {
+            PointF opponentGoalPos;
+            if (m_side == 'l')
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal r");
+            }
+            else
+            {
+                opponentGoalPos = (PointF)FlagNameToPointF.Convert("goal l");
+            }
+            opponentGoalPos.Y += 5;
+            return GetAngleToPoint(opponentGoalPos);
+        }
+
+
         public static void WaitSimulatorStep()
         {
             try
@@ -309,6 +340,20 @@ namespace RoboCup
         {
             return GetDistanceToPoint(GetBallDetailsByCoach().Pos.Value);
         }
+        public double GetDistanceToOpponentGoal()
+        {
+            PointF OpponentGoal;
+            if (m_side == 'l')
+            {
+                OpponentGoal = (PointF)FlagNameToPointF.Convert("goal r");
+            }
+            else
+            {
+                OpponentGoal = (PointF)FlagNameToPointF.Convert("goal l");
+            }
+            return GetDistanceToPoint(OpponentGoal);
+        }
+
 
         public double GetDistanceToMyOrigin()
         {
