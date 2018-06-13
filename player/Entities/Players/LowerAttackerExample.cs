@@ -42,7 +42,7 @@ namespace RoboCup
                     {
                         if (m_side == 'l')
                         {
-                            if (ball.Pos.Value.X < -10 || player.Pos.Value.Y < -5)
+                            if (player.Pos.Value.X < -10 || player.Pos.Value.Y < -5)
                             {
                                 goToCoordinate(m_startPosition, 1);
                                 WaitSimulatorStep();

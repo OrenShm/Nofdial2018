@@ -25,7 +25,7 @@ namespace RoboCup
                 }
             }
 
-            if (m_teamName is null)
+            if (m_teamName == null)
             {
                 m_teamName = SoccerParams.m_teamName;
             }
