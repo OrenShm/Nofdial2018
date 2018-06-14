@@ -87,9 +87,7 @@ namespace RoboCup
                         }
 
                         //WaitSimulatorStep();
-                        if ((GetMyPlayerDetailsByCoach().Pos.Value.X > 0 && m_side == 'l') ||
-                            (GetMyPlayerDetailsByCoach().Pos.Value.X < 0 && m_side == 'r'))
-                        {
+
                             double angle = 0.0;
                             if (GetDistanceToOpponentGoal() < 10)
                             {
@@ -111,13 +109,8 @@ namespace RoboCup
                             WaitSimulatorStep();
 
                         }
-                        else
-                        {
-                            if (!SpinAroundBall()) continue;
-                            m_robot.Kick(60, GetAngleToOpponentGoal());
-                            WaitSimulatorStep();
-                        }
-                    }
+
+                    
                 }
                 catch (Exception e)
                 {
