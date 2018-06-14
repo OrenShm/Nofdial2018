@@ -12,22 +12,20 @@ namespace RoboCup
 {
     public class Defender : Player
     {
-        private const int WORKING_AREA = 35;
-        private const int MOST_FORWARD_POSSITION = 5;
-        private const int MOST_HEIGHT_DISTANCE = -15;
+        public const int WORKING_AREA = 35;
+        public const int MOST_FORWARD_POSSITION = 0;
+        public const int MOST_HEIGHT_DISTANCE = 0;
+        public const int WAIT_FOR_MSG_TIME = 10;
 
-
-        private const int WAIT_FOR_MSG_TIME = 10;
-
-        private bool OverX
+        public virtual bool OverX
         {
             get
             {
                 if (m_side == 'l')
                 {
-                    return GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION;
+                    return GetBallDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION;
                 }
-                return GetMyPlayerDetailsByCoach().Pos.Value.X < MOST_FORWARD_POSSITION * -1;
+                return GetBallDetailsByCoach().Pos.Value.X < MOST_FORWARD_POSSITION * -1;
             }
         }
 
@@ -35,7 +33,7 @@ namespace RoboCup
         {
             get
             {
-                return GetMyPlayerDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE;
+                return false;
             }
         }
 
@@ -60,7 +58,6 @@ namespace RoboCup
                     {
                         //GoToOriginSynced();
                         goToCoordinate(m_startPosition, 1);
-                        WaitSimulatorStep();
                     }
                     else
                     {
@@ -76,7 +73,6 @@ namespace RoboCup
                         {
                             if (goToCoordinate(new PointF(myXVal, ballYVal), m_sideFactor * 3) == false)
                             {
-                                WaitSimulatorStep();
                                 continue;
                             }
                         }
@@ -84,7 +80,6 @@ namespace RoboCup
                         {
                             if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
                             {
-                                WaitSimulatorStep();
                                 continue;
                             }
                         }
@@ -134,19 +129,6 @@ namespace RoboCup
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
             //WaitSimulatorStep();
-        }
-
-        private SenseBodyInfo GetBodyInfo()
-        {
-            m_robot.SenseBody();
-            SenseBodyInfo bodyInfo = null;
-            while (bodyInfo == null)
-            {
-                Thread.Sleep(WAIT_FOR_MSG_TIME);
-                bodyInfo = m_memory.getBodyInfo();
-            }
-
-            return bodyInfo;
         }
     }
 }
