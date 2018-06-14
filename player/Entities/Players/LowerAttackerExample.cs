@@ -98,7 +98,7 @@ namespace RoboCup
             var directiontoGoal = GetAngleToPoint(goal.Pos.Value);
             var angleToGoal = GetAngleToPoint(ball.Pos.Value);
 
-            if (distanceToGate < 18)
+            if (distanceToGate < 22)
             {
                 KickOrMoveWithBall(player, 100, distanceToBall, directiontoGoal, ball);
             }
@@ -161,12 +161,19 @@ namespace RoboCup
                 }
                  if (myBall == null || isAhead)
                 {
-                    SpinAroundBall();
+                    if (!SpinAroundBall())
+                    {
+                        return;
+                    };
                     m_robot.Kick(power, directiontoGoal);
 
                 }
                 else
                 {
+                    if (!SpinAroundBall())
+                    {
+                        return;
+                    };
                     m_robot.Kick(power, directiontoGoal);
                 }
             }
