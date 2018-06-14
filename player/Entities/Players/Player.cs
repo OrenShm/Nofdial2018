@@ -93,14 +93,14 @@ namespace RoboCup
             //Console.WriteLine($"myAbsAngle: {myAbsAngle}");
             //Console.WriteLine($"angleToTarget: {angleToTarget}");
 
-            var turnAngle = -1 * (Convert.ToDouble(myAbsAngle) + angleToTarget);
+            var turnAngle = (angleToTarget - Convert.ToDouble(myAbsAngle));
+
             //Console.WriteLine($"turnAngle: {turnAngle}");
 
             var fixedAngle = NormalizeTo180(turnAngle);
             //Console.WriteLine($"fixedAngle: {fixedAngle}");
 
-
-            return turnAngle;
+            return fixedAngle;
         }
 
         public double GetAngleTo0()
@@ -108,7 +108,14 @@ namespace RoboCup
             var myPosByCoach = GetMyPlayerDetailsByCoach();
             var myAbsAngle = myPosByCoach.BodyAngle;
             myAbsAngle = -1 * myAbsAngle;
-            return NormalizeTo180(Convert.ToDouble(myAbsAngle));
+            if (m_side == 'l')
+            {
+                return NormalizeTo180(Convert.ToDouble(myAbsAngle));
+            }
+            else
+            {
+                return NormalizeTo180(Convert.ToDouble(myAbsAngle) + 180);
+            }
         }
 
         public double GetAngleToOpponentGoal()
@@ -290,10 +297,20 @@ namespace RoboCup
             {
                 var ballPosByCoach = GetBallDetailsByCoach().Pos.Value;
                 var myPosByCoach = GetMyPlayerDetailsByCoach().Pos.Value;
-                if (ballPosByCoach.X < myPosByCoach.X)
-                {
-                    ballPosByCoach.X -= beforeBallDistance * m_sideFactor;
+                if (m_side == 'l'){
+                    if (ballPosByCoach.X < myPosByCoach.X)
+                    {
+                        ballPosByCoach.X -= beforeBallDistance * m_sideFactor;
+                    }
                 }
+                else
+                {
+                    if (ballPosByCoach.X > myPosByCoach.X)
+                    {
+                        ballPosByCoach.X += beforeBallDistance;
+                    }
+                }
+
                 var ballPosBySensors = m_memory.GetSeenObject("ball");
                 if (ballPosBySensors == null)//We couldn't see the ball, go according to Coach directions
                 {
@@ -379,10 +396,21 @@ namespace RoboCup
                     }
                     else
                     {
-                        if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                        if (m_side == 'l')
                         {
-                            mostForwardPos = seenObject.Value.Pos.Value;
+                            if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                            {
+                                mostForwardPos = seenObject.Value.Pos.Value;
+                            }
                         }
+                        else
+                        {
+                            if (seenObject.Value.Pos.Value.X < mostForwardPos.Value.X)
+                            {
+                                mostForwardPos = seenObject.Value.Pos.Value;
+                            }
+                        }
+
                     }
                 }
             }
@@ -441,7 +469,7 @@ namespace RoboCup
         //---------------------------Private Utils------------------------------
         private static double Calc2PointsAngleByXAxis(PointF start, PointF end)
         {
-            return Math.Atan2(start.Y - end.Y, end.X - start.X) * Rad2Deg;
+            return Math.Atan2(end.Y - start.Y, end.X - start.X) * Rad2Deg;
         }
 
         private static double NormalizeTo180(double angle)

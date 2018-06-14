@@ -17,6 +17,7 @@ namespace RoboCup
 
             players.Add(new UpperDefender(team, coach));
             players.Add(new LowerDefender(team, coach));
+            //players.Add(new Dummy(team, coach));
 
 
             return players;

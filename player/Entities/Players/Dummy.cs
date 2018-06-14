@@ -28,11 +28,20 @@ namespace RoboCup
 
             while (!m_timeOver)
             {
+                try
+                {
+                    m_robot.Turn(90);
+                    Console.WriteLine(GetMyPlayerDetailsByCoach().BodyAngle);
+                }
+                catch (Exception e)
+                {
+
+                }
                 // sleep one step to ensure that we will not send
                 // two commands in one cycle.
                 try
                 {
-                    Thread.Sleep(2 * SoccerParams.simulator_step);
+                    Thread.Sleep(10 * SoccerParams.simulator_step);
                 }
                 catch (Exception e)
                 {
