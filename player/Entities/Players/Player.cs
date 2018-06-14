@@ -176,11 +176,50 @@ namespace RoboCup
         }
 
         //--------------------------Higher Level API-------------------------
+        public bool SpinAroundBall()
+        {
+            if (GetDistanceToBall() > DistFromBallToKick)
+            {
+                return true;
+            }
+
+                if((m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.X < GetBallDetailsByCoach().Pos.Value.X) ||
+                   (m_side == 'r' && GetMyPlayerDetailsByCoach().Pos.Value.X > GetBallDetailsByCoach().Pos.Value.X))
+                {
+                    return true;
+                }
+                var ball = m_memory.GetSeenObject("ball");
+            if (ball != null && Math.Abs(ball.Direction.Value) < 10)
+            {
+                if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
+                {
+                    m_robot.Turn(90);
+                    WaitSimulatorStep();
+                    m_robot.Dash(15);
+                    WaitSimulatorStep();
+                    m_robot.Turn(-90);
+                    return false;
+                }
+                else
+                {
+                    m_robot.Turn(-90);
+                    WaitSimulatorStep();
+                    m_robot.Dash(15);
+                    WaitSimulatorStep();
+                    m_robot.Turn(90);
+                    return false;
+                }
+
+            }
+            return true;
+
+        }
+
         public bool PassToPossition(PointF targetPoint)
         {
             if (GetDistanceToBall() > DistFromBallToKick)
             {
-                throw new Exception("Too far from ball to shot");
+                return true;
             }
             var dist = GetDistanceToPoint(targetPoint);
            
@@ -406,6 +445,11 @@ namespace RoboCup
             {
                 if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
                 {
+                    if (seenObject.Key.StartsWith($"player {m_team.m_teamName} 1"))
+                    {
+                        //It's Goalie, not relevant.
+                        continue;
+                    }
                     if (mostForwardPos == null)
                     {
                         mostForwardPos = seenObject.Value.Pos.Value;
@@ -470,6 +514,10 @@ namespace RoboCup
             {
                 if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
                 {
+                    if (seenObject.Key.StartsWith($"player {m_team.m_teamName} 1"))
+                    {
+                        continue;
+                    }
                     if (Math.Abs(maxDist - 200) < 1 )
                     {
                         mostClosePlayerName = seenObject.Value.Name;
