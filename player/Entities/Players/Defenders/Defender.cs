@@ -56,10 +56,6 @@ namespace RoboCup
                 {
                     if (!AmIClosest() && (OverY || (OverX && !AmIMostForwarded())))
                     {
-                        //GoToOriginSynced();
-//                        Console.WriteLine($"Player {m_number} going back (amIclosest = {AmIClosest()}) ");
-  //                      Console.WriteLine($"OrigPoint: {m_startPosition.X},{m_startPosition.X} ");
-
                         goToCoordinate(m_startPosition, 1);
                     }
                     else
@@ -111,6 +107,11 @@ namespace RoboCup
                                 }
                                 if (!SpinAroundBall()) continue;
                                 m_robot.Kick(100, angle);
+                                WaitSimulatorStep();
+                            }
+                            else
+                            {
+                                PassToPossition((PointF)GetMostForwardPlayerPossition());
                                 WaitSimulatorStep();
                             }
                         }

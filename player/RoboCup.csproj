@@ -71,14 +71,14 @@
     <Compile Include="Entities\ICoach.cs" />
     <Compile Include="Entities\Players\AttackerExample.cs" />
     <Compile Include="Entities\Players\CenteralAttacker.cs" />
+    <Compile Include="Entities\Players\OrenUpperAttacker.cs" />
+    <Compile Include="Entities\Players\OrenLowerAttacker.cs" />
     <Compile Include="Entities\Players\LowerDefender.cs" />
     <Compile Include="Entities\Players\UpperAttackerExample.cs" />
     <Compile Include="Entities\Players\UpperDefender.cs" />
     <Compile Include="Entities\Players\Defenders\Defender.cs" />
     <Compile Include="Entities\Players\Dummy.cs" />
     <Compile Include="Entities\Players\Forwards\Forward.cs" />
-    <Compile Include="Entities\Players\Forwards\Striker.cs" />
-    <Compile Include="Entities\Players\Forwards\WithdrawnStriker.cs" />
     <Compile Include="Entities\Players\Goalkeeper.cs" />
     <Compile Include="Entities\Players\Midfielders\AttackingMidfielder.cs" />
     <Compile Include="Entities\Players\Midfielders\CentralMidfielder.cs" />

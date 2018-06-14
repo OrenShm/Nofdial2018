@@ -491,6 +491,11 @@ namespace RoboCup
             {
                 if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
                 {
+                    if (seenObject.Key.StartsWith($"player {m_team.m_teamName} 1"))
+                    {
+                        //It's Goalie, not relevant.
+                        continue;
+                    }
                     if (mostForwardPos == null)
                     {
                         mostForwardName = seenObject.Value.Name;
@@ -498,15 +503,69 @@ namespace RoboCup
                     }
                     else
                     {
-                        if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                        if (m_side == 'l')
                         {
-                            mostForwardName = seenObject.Value.Name;
-                            mostForwardPos = seenObject.Value.Pos.Value;
+                            if (seenObject.Value.Pos.Value.X > mostForwardPos.Value.X)
+                            {
+                                mostForwardName = seenObject.Value.Name;
+                                mostForwardPos = seenObject.Value.Pos.Value;
+                            }
+                        }
+                        else
+                        {
+                            if (seenObject.Value.Pos.Value.X < mostForwardPos.Value.X)
+                            {
+                                mostForwardName = seenObject.Value.Name;
+                                mostForwardPos = seenObject.Value.Pos.Value;
+                            }
                         }
                     }
                 }
             }
             return mostForwardName;
+        }
+
+        public string GetMostBackwardPlayerName()
+        {
+            PointF? mostBackwardPos = null;
+            string mostBackwardName = null;
+            var seenObjects = m_coach.GetSeenCoachObjects();
+            foreach (var seenObject in seenObjects)
+            {
+                if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
+                {
+                    if (seenObject.Key.StartsWith($"player {m_team.m_teamName} 1"))
+                    {
+                        //It's Goalie, not relevant.
+                        continue;
+                    }
+                    if (mostBackwardPos == null)
+                    {
+                        mostBackwardName = seenObject.Value.Name;
+                        mostBackwardPos = seenObject.Value.Pos.Value;
+                    }
+                    else
+                    {
+                        if (m_side == 'l')
+                        {
+                            if (seenObject.Value.Pos.Value.X < mostBackwardPos.Value.X)
+                            {
+                                mostBackwardName = seenObject.Value.Name;
+                                mostBackwardPos = seenObject.Value.Pos.Value;
+                            }
+                        }
+                        else
+                        {
+                            if (seenObject.Value.Pos.Value.X > mostBackwardPos.Value.X)
+                            {
+                                mostBackwardName = seenObject.Value.Name;
+                                mostBackwardPos = seenObject.Value.Pos.Value;
+                            }
+                        }
+                    }
+                }
+            }
+            return mostBackwardName;
         }
 
         public string GetClosestPlayerName()
@@ -549,6 +608,12 @@ namespace RoboCup
         {
             return GetMyPlayerName() == GetMostForwardPlayerName();
         }
+
+        public bool AmIMostBackward()
+        {
+            return GetMyPlayerName() == GetMostBackwardPlayerName();
+        }
+
 
         public bool AmIClosest()
         {
