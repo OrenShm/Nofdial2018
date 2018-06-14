@@ -19,22 +19,7 @@ namespace RoboCup
         {
             m_startPosition = new PointF(m_sideFactor * 30, 0);
         }
-
-        private void MoveToGoaliePossition()
-        {
-            PointF goalPossition = GetGoalPossition("goal l");
-            m_robot.Turn(138);
-            bool KeepOnMoving = true;
-            while (KeepOnMoving)
-            {
-                m_robot.Dash(80);
-                SeenCoachObject myPossition = GetMyPossition();
-                if (myPossition?.Pos.Value.X <= goalPossition.X + 7)
-                {
-                    KeepOnMoving = false;
-                }
-            }
-        }
+                
         private SeenCoachObject GetMyPossition()
         {
             SeenCoachObject seenCoachObject = m_coach.GetSeenCoachObject("player " + m_team.m_teamName + " " + m_number);
@@ -113,7 +98,7 @@ namespace RoboCup
         {
             // first ,ove to start position
             m_robot.Move(m_startPosition.X, m_startPosition.Y);
-            //MoveToGoaliePossition();
+            // Move to start possition.
             PointF startPoint;
             if (m_side == 'l')
             {
@@ -127,14 +112,7 @@ namespace RoboCup
             }
             while (!goToCoordinate(startPoint,1))
             {
-                try
-                {
-                    Thread.Sleep(SoccerParams.simulator_step);
-                }
-                catch (Exception e)
-                {
-
-                }
+                
             }
             TurnToAngle0();  // Turn to the opponent's goal.
 
@@ -142,12 +120,6 @@ namespace RoboCup
             {
                 SeenObject ball = null;
                 SeenObject goal = null;
-
-                //Get current player's info:
-                var bodyInfo = GetBodyInfo();
-                Console.WriteLine($"Kicks so far : {bodyInfo.Kick}");
-
-                
 
                 while (ball == null || ball.Distance > 1.5)
                 {
@@ -186,9 +158,17 @@ namespace RoboCup
                             // turn to ball or 
                             // if we have correct direction then go to ball
                             if (Math.Abs((double)ball.Direction) < 0)
+                            {
                                 m_robot.Turn(ball.Direction.Value);
+                                WaitSimulatorStep();
+                            }
                             else
-                                m_robot.Dash(10 * ball.Distance.Value);
+                            {
+                                //m_robot.Dash(10 * ball.Distance.Value);
+                                //WaitSimulatorStep();
+                                //WaitSimulatorStep();
+                                DashToPoint(GetBallDetailsByCoach().Pos.Value,1);
+                            }
                         }
                     }
                     else  // ball.Distance <= 1.5, so we can catch the ball.
@@ -198,16 +178,18 @@ namespace RoboCup
                         {
                             // If you don't know where is ball then find it
                             m_robot.Turn(40);
-                            m_memory.waitForNewInfo();
-                            Thread.Sleep(SoccerParams.simulator_step);
+                            WaitSimulatorStep();
+
+                            //m_memory.waitForNewInfo();
+                            //Thread.Sleep(SoccerParams.simulator_step);
                             ball = m_memory.GetSeenObject("ball");
                         }
                         m_robot.Catch(ball.Direction.Value);
-                        Thread.Sleep(SoccerParams.simulator_step);
+                        WaitSimulatorStep();
                         TurnToAngle0();
-                        Thread.Sleep(SoccerParams.simulator_step);
+                        
                         m_robot.Move(-40, 15);
-                        Thread.Sleep(SoccerParams.simulator_step);
+                        WaitSimulatorStep();
                         double angleTo0 = GetAngleTo0();
                         double angleToBall = GetAngleToPoint(new PointF(ballPosByCoach.Pos.Value.X, ballPosByCoach.Pos.Value.Y));
 
@@ -223,6 +205,7 @@ namespace RoboCup
 
 
                         m_robot.Kick(100, angleTo0);
+                        WaitSimulatorStep();
                         //Console.WriteLine($"Kick angleTo0: {angleTo0}");
                         //Console.WriteLine($"angleToBall: {angleToBall}");
 
@@ -239,29 +222,18 @@ namespace RoboCup
 
 
                 // sleep one step to ensure that we will not send
-                // two commands in one cycle.
-                try
-                {
-                    Thread.Sleep(SoccerParams.simulator_step);
-                }
-                catch (Exception e)
-                {
+                //// two commands in one cycle.
+                //try
+                //{
+                //    Thread.Sleep(SoccerParams.simulator_step);
+                //}
+                //catch (Exception e)
+                //{
 
-                }
+                //}
             }  // DROR
         }
 
-        private SenseBodyInfo GetBodyInfo()
-        {
-            m_robot.SenseBody();
-            SenseBodyInfo bodyInfo = null;
-            while (bodyInfo == null)
-            {
-                Thread.Sleep(WAIT_FOR_MSG_TIME);
-                bodyInfo = m_memory.getBodyInfo();
-            }
 
-            return bodyInfo;
-        }
     }
 }
