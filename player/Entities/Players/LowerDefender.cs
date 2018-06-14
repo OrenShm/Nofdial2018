@@ -19,6 +19,25 @@ namespace RoboCup
 
         private const int WAIT_FOR_MSG_TIME = 10;
 
+        private bool OverX {
+            get
+            {
+                if (m_side == 'l')
+                {
+                    return GetBallDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION;
+                }
+                return GetBallDetailsByCoach().Pos.Value.X < MOST_FORWARD_POSSITION * -1;
+            }
+        }
+
+        private bool OverY
+        {
+            get
+            {
+                return GetBallDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE;
+            }
+        }
+
 
         public LowerDefender(Team team, ICoach coach)
             : base(team, coach)
@@ -36,14 +55,10 @@ namespace RoboCup
             {
                 try
                 {
-                    if (GetDistanceToBall() > WORKING_AREA ||
-                        GetMyPlayerDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE ||
-                        ( GetMyPlayerDetailsByCoach().Pos.Value.X > MOST_FORWARD_POSSITION ) && !AmIMostForwarded())
-
+                    if (!AmIClosest() &&  (OverY || (OverX && !AmIMostForwarded())))
                     {
                         //GoToOriginSynced();
                         goToCoordinate(m_startPosition, 1);
-                        WaitSimulatorStep();
                     }
                     else
                     {
@@ -59,7 +74,6 @@ namespace RoboCup
                         {
                             if (goToCoordinate(new PointF(myXVal, ballYVal), m_sideFactor * 3) == false)
                             {
-                                WaitSimulatorStep();
                                 continue;
                             }
                         }
@@ -67,13 +81,13 @@ namespace RoboCup
                         {
                             if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
                             {
-                                WaitSimulatorStep();
                                 continue;
                             }
                         }
 
                         //WaitSimulatorStep();
-                        if (GetMyPlayerDetailsByCoach().Pos.Value.X > 0)
+                        if ((GetMyPlayerDetailsByCoach().Pos.Value.X > 0 && m_side == 'l') ||
+                            (GetMyPlayerDetailsByCoach().Pos.Value.X < 0 && m_side == 'r'))
                         {
                             if (AmIMostForwarded())
                             {
@@ -94,13 +108,11 @@ namespace RoboCup
                                     angle = GetAngleToOpponentGoal();
                                 }
                                 m_robot.Kick(100, angle);
-                                WaitSimulatorStep();
                             }
                         }
                         else
                         {
-                            m_robot.Kick(30, 0);
-                            WaitSimulatorStep();
+                            m_robot.Kick(60, GetAngleToOpponentGoal());
                         }
                     }
                 }
@@ -116,19 +128,6 @@ namespace RoboCup
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
             //WaitSimulatorStep();
-        }
-
-        private SenseBodyInfo GetBodyInfo()
-        {
-            m_robot.SenseBody();
-            SenseBodyInfo bodyInfo = null;
-            while (bodyInfo == null)
-            {
-                Thread.Sleep(WAIT_FOR_MSG_TIME);
-                bodyInfo = m_memory.getBodyInfo();
-            }
-
-            return bodyInfo;
         }
     }
 }

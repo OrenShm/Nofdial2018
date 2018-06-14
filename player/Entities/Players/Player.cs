@@ -196,17 +196,20 @@ namespace RoboCup
             {
                 m_robot.Kick(Math.Min(100, GetDistanceToPoint(targetPoint) * 3), GetAngleToPoint(targetPoint));
             }
+            WaitSimulatorStep();
             return true;
         }
 
         public void TurnToAngle0()
         {
             m_robot.Turn(GetAngleTo0());
+            WaitSimulatorStep();
         }
 
         public void TurnToOpponentGoal()
         {
             m_robot.Turn(GetAngleToOpponentGoal());
+            WaitSimulatorStep();
         }
 
         /// <summary>
@@ -228,6 +231,7 @@ namespace RoboCup
                 if (Math.Abs(turnAngle) > 10)
                 {
                     m_robot.Turn(turnAngle);
+                    WaitSimulatorStep();
                     return false;
                 }
                 else
@@ -279,6 +283,7 @@ namespace RoboCup
             if (Math.Abs(turnAngle) > 10)
             {
                 m_robot.Turn(turnAngle);
+                WaitSimulatorStep();
                 return false;
             }
             else
@@ -319,6 +324,7 @@ namespace RoboCup
                 if (Math.Abs(ballPosBySensors.Direction.Value) > 10)
                 {
                     m_robot.Turn(ballPosBySensors.Direction.Value);
+                    WaitSimulatorStep();
                     return false;
                 }
                 return DashToPoint(ballPosByCoach, trashHold);
@@ -346,11 +352,13 @@ namespace RoboCup
             if (dist > 2)
             {
                 m_robot.Dash(100);
+                WaitSimulatorStep();
+                WaitSimulatorStep();
             }
             else
             {
                 m_robot.Dash(Math.Min(100, 20 * dist));
-
+                WaitSimulatorStep();
             }
             return false;
         }
@@ -452,17 +460,52 @@ namespace RoboCup
             return mostForwardName;
         }
 
+        public string GetClosestPlayerName()
+        {
+            double maxDist = 200;
+            PointF? mostClosePlayerPoint = null;
+            string mostClosePlayerName = null;
+            var seenObjects = m_coach.GetSeenCoachObjects();
+            foreach (var seenObject in seenObjects)
+            {
+                if (seenObject.Key.StartsWith($"player {m_team.m_teamName}"))
+                {
+                    if (Math.Abs(maxDist - 200) < 1 )
+                    {
+                        mostClosePlayerName = seenObject.Value.Name;
+                        mostClosePlayerPoint = seenObject.Value.Pos.Value;
+                        maxDist = GetDistanceBetween2Points(seenObject.Value.Pos.Value, GetBallDetailsByCoach().Pos.Value);
+                    }
+                    else
+                    {
+                        var curDist = GetDistanceBetween2Points((PointF)mostClosePlayerPoint, GetBallDetailsByCoach().Pos.Value);
+                        if (curDist < maxDist)
+                        {
+                            maxDist = curDist;
+                            mostClosePlayerName = seenObject.Value.Name;
+                            mostClosePlayerPoint = seenObject.Value.Pos.Value;
+                        }
+                    }
+                }
+            }
+            return mostClosePlayerName;
+        }
+
+
         public bool AmIMostForwarded()
         {
             return GetMyPlayerName() == GetMostForwardPlayerName();
         }
 
+        public bool AmIClosest()
+        {
+            return GetMyPlayerName() == GetClosestPlayerName();
+        }
+
+
         public void GoToOriginSynced()
         {
-            while (!goToCoordinate(m_startPosition, 1))
-            {
-                WaitSimulatorStep();
-            }
+            while (!goToCoordinate(m_startPosition, 1)){}
         }
 
         public void RushBallSynced()
@@ -470,7 +513,6 @@ namespace RoboCup
             while (true)
             {
                 if (goToBallCoordinates(1.5, m_sideFactor * 3)) break;
-                WaitSimulatorStep();
             }
         }
 
