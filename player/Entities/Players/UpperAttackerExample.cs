@@ -42,7 +42,7 @@ namespace RoboCup
                     {
                         if (m_side == 'l')
                         {
-                            if (ball.Pos.Value.X < -10 || player.Pos.Value.Y > 5)
+                            if (player.Pos.Value.X < -10 || player.Pos.Value.Y > 5)
                             {
                                 goToCoordinate(m_startPosition, 1);
                                 WaitSimulatorStep();
@@ -51,7 +51,7 @@ namespace RoboCup
                         }
                         else
                         {
-                            if (ball.Pos.Value.X > 10 || player.Pos.Value.Y > 5)
+                            if (player.Pos.Value.X > 10 || player.Pos.Value.Y > 5)
                             {
                                 goToCoordinate(m_startPosition, 1);
                                 WaitSimulatorStep();
@@ -110,13 +110,16 @@ namespace RoboCup
 
         private void KickOrMoveWithBall(SeenCoachObject player, double power, double distanceToBall, double directiontoGoal, SeenCoachObject ball)
         {
-            if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+            if (m_side == 'l')
             {
-                directiontoGoal = GetAngleToOpponentGoalLow();
-            }
-            else
-            {
-                directiontoGoal = GetAngleToOpponentGoalUp();
+                if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
+                {
+                    directiontoGoal = GetAngleToOpponentGoalLow();
+                }
+                else
+                {
+                    directiontoGoal = GetAngleToOpponentGoalUp();
+                }
             }
 
             if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
@@ -124,10 +127,30 @@ namespace RoboCup
                 PointF point;
                 if (m_side == 'l')
                 {
+                    float y;
+                    float x;
+                    //if (Math.Abs(player.Pos.Value.Y - ball.Pos.Value.Y) <3)
+                    //{
+                    //    y = 0;
+                    //}
+                    //else
+                    //{
+                    //    y = -10;
+                    //}
+                    y = -10;
+                    if (Math.Abs(player.Pos.Value.X - ball.Pos.Value.X) < 3)
+                    {
+                        x = -10;
+                    }
+                    else
+                    {
+                        x = 10;
+                    }
+
                     point = new PointF()
                     {
-                        X = ball.Pos.Value.X - 7,
-                        Y = ball.Pos.Value.Y -5
+                        X = ball.Pos.Value.X + x,
+                        Y = ball.Pos.Value.Y + y
                     };
                 }
                 else

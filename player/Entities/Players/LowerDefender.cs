@@ -12,7 +12,7 @@ namespace RoboCup
 {
     public class LowerDefender : Player
     {
-        private const int WORKING_AREA = 30;
+        private const int WORKING_AREA = 35;
         private const int MOST_FORWARD_POSSITION = 5;
         private const int MOST_HEIGHT_DISTANCE = -15;
 
@@ -48,11 +48,30 @@ namespace RoboCup
                     else
                     {
                         //RushBallSynced();
-                        if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
+                        var ballXVal = GetBallDetailsByCoach().Pos.Value.X;
+                        var ballYVal = GetBallDetailsByCoach().Pos.Value.Y;
+
+                        var myXVal = GetMyPlayerDetailsByCoach().Pos.Value.X;
+                        var myYVal = GetMyPlayerDetailsByCoach().Pos.Value.Y;
+
+                        bool farEnough = ballXVal > myXVal && (Math.Abs(Math.Abs(ballXVal) - Math.Abs(myXVal)) > 10);
+                        if (farEnough && Math.Abs(ballYVal - myYVal) > 4)
                         {
-                            WaitSimulatorStep();
-                            continue;
+                            if (goToCoordinate(new PointF(myXVal, ballYVal), m_sideFactor * 3) == false)
+                            {
+                                WaitSimulatorStep();
+                                continue;
+                            }
                         }
+                        else
+                        {
+                            if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
+                            {
+                                WaitSimulatorStep();
+                                continue;
+                            }
+                        }
+
                         //WaitSimulatorStep();
                         if (GetMyPlayerDetailsByCoach().Pos.Value.X > 0)
                         {

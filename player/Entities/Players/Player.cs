@@ -343,7 +343,15 @@ namespace RoboCup
             {
                 return true;
             }
-            m_robot.Dash(Math.Min(100, 20 * dist));
+            if (dist > 2)
+            {
+                m_robot.Dash(100);
+            }
+            else
+            {
+                m_robot.Dash(Math.Min(100, 20 * dist));
+
+            }
             return false;
         }
 
