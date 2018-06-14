@@ -108,11 +108,13 @@ namespace RoboCup
                                     angle = GetAngleToOpponentGoal();
                                 }
                                 m_robot.Kick(100, angle);
+                                WaitSimulatorStep();
                             }
                         }
                         else
                         {
                             m_robot.Kick(60, GetAngleToOpponentGoal());
+                            WaitSimulatorStep();
                         }
                     }
                 }
