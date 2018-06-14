@@ -119,35 +119,51 @@ namespace RoboCup
             {
                 directiontoGoal = GetAngleToOpponentGoalUp();
             }
+            var myBall = m_memory.GetSeenObject("ball");
 
-            if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
-            {
-                PointF point;
-                if (m_side == 'l')
-                {
-                    point = new PointF()
-                    {
-                        X = ball.Pos.Value.X,
-                        Y = ball.Pos.Value.Y + 10
-                    };
-                }
-                else
-                {
-                    point = new PointF()
-                    {
-                        X = ball.Pos.Value.X +3,
-                        Y = ball.Pos.Value.Y - 10
-                    };
-                }
+            //if (Math.Abs(distanceToBall) < 10)
+            //{
+            //    if (myBall == null)
+            //    {
+            //        PointF point;
+            //        if (m_side == 'l')
+            //        {
+            //            point = new PointF()
+            //            {
+            //                X = ball.Pos.Value.X,
+            //                Y = ball.Pos.Value.Y + 10
+            //            };
+            //        }
+            //        else
+            //        {
+            //            point = new PointF()
+            //            {
+            //                X = ball.Pos.Value.X + 3,
+            //                Y = ball.Pos.Value.Y - 10
+            //            };
+                       
+            //        }
+            //        goToCoordinate(point, 0);
+            //        return;
+            //    }
+            //}              
 
-                
-                goToCoordinate(point,0);
-            }
-          else if (NearBoal(distanceToBall))
+            if (NearBoal(distanceToBall))
             {
-                if (Math.Abs(player.BodyAngle.Value) > 95)
+                bool isAhead = false;
+                if (m_side == 'l' && Math.Abs(player.BodyAngle.Value) > 45)
                 {
-                    m_robot.Kick(-30, directiontoGoal);
+                    isAhead = true;
+                }
+                else if(m_side == 'r' && Math.Abs(player.BodyAngle.Value) < 45)
+                {
+                    isAhead = true;
+                }
+                 if (myBall == null || isAhead)
+                {
+                    SpinAroundBall();
+                    m_robot.Kick(power, directiontoGoal);
+
                 }
                 else
                 {
