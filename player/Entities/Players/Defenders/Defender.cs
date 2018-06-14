@@ -74,14 +74,14 @@ namespace RoboCup
                         bool farEnough = ballXVal > myXVal && (Math.Abs(Math.Abs(ballXVal) - Math.Abs(myXVal)) > 10);
                         if (farEnough && Math.Abs(ballYVal - myYVal) > 4)
                         {
-                            if (goToCoordinate(new PointF(myXVal, ballYVal), m_sideFactor * 3) == false)
+                            if (goToCoordinate(new PointF(myXVal, ballYVal), m_sideFactor * 0) == false)
                             {
                                 continue;
                             }
                         }
                         else
                         {
-                            if (goToBallCoordinates(1.5, m_sideFactor * 3) == false)
+                            if (goToBallCoordinates(1.5, m_sideFactor * 0) == false)
                             {
                                 continue;
                             }

@@ -193,7 +193,7 @@ namespace RoboCup
             {
                 if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
                 {
-                    m_robot.Turn(90);
+                    m_robot.Turn(ball.Direction.Value + 90);
                     WaitSimulatorStep();
                     m_robot.Dash(15);
                     WaitSimulatorStep();
@@ -210,6 +210,11 @@ namespace RoboCup
                     return false;
                 }
 
+            }
+            else
+            {
+                m_robot.Dash(15);
+                WaitSimulatorStep();
             }
             return true;
 
