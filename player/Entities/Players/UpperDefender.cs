@@ -16,7 +16,7 @@ namespace RoboCup
         {
             get
             {
-                return GetBallDetailsByCoach().Pos.Value.Y < MOST_HEIGHT_DISTANCE * -1;
+                return GetBallDetailsByCoach().Pos.Value.Y > MOST_HEIGHT_DISTANCE;
             }
         }
 
