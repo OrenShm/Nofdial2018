@@ -105,7 +105,7 @@ namespace RoboCup
                                 {
                                     angle = GetAngleToOpponentGoal();
                                 }
-                                if (!SpinAroundBall()) continue;
+                                if (!OrenSpinAroundBall()) continue;
                                 m_robot.Kick(100, angle);
                                 WaitSimulatorStep();
                             }
@@ -117,7 +117,7 @@ namespace RoboCup
                         }
                         else
                         {
-                            if (!SpinAroundBall()) continue;
+                            if (!OrenSpinAroundBall()) continue;
                             m_robot.Kick(60, GetAngleToOpponentGoal());
                             WaitSimulatorStep();
                         }

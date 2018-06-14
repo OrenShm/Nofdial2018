@@ -176,6 +176,63 @@ namespace RoboCup
         }
 
         //--------------------------Higher Level API-------------------------
+        public bool OrenSpinAroundBall()
+        {
+            if (GetDistanceToBall() > DistFromBallToKick)
+            {
+                return true;
+            }
+
+            if ((m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.X < GetBallDetailsByCoach().Pos.Value.X) ||
+               (m_side == 'r' && GetMyPlayerDetailsByCoach().Pos.Value.X > GetBallDetailsByCoach().Pos.Value.X))
+            {
+                return true;
+            }
+
+            double angleToPoint;
+            var ball = m_memory.GetSeenObject("ball");
+
+            if (ball != null)
+            {
+                angleToPoint = ball.Direction.Value;
+            }
+            else
+            {
+                angleToPoint = GetAngleToPoint(GetBallDetailsByCoach().Pos.Value);
+            }
+
+            if (Math.Abs(angleToPoint) < 10)
+            {
+                if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
+                {
+                    m_robot.Turn(NormalizeTo180(ball.Direction.Value + 90));
+                    WaitSimulatorStep();
+                    m_robot.Dash(15);
+                    WaitSimulatorStep();
+                    m_robot.Turn(-90);
+                    return false;
+                }
+                else
+                {
+                    m_robot.Turn(NormalizeTo180(angleToPoint - 90));
+                    WaitSimulatorStep();
+                    m_robot.Dash(15);
+                    WaitSimulatorStep();
+                    m_robot.Turn(90);
+                    return false;
+                }
+
+            }
+            else
+            {
+                m_robot.Dash(15);
+                WaitSimulatorStep();
+            }
+            return true;
+
+        }
+
+
         public bool SpinAroundBall()
         {
             if (GetDistanceToBall() > DistFromBallToKick)
