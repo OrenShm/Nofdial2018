@@ -526,7 +526,7 @@ namespace RoboCup
                     }
                     else
                     {
-                        var curDist = GetDistanceBetween2Points((PointF)mostClosePlayerPoint, GetBallDetailsByCoach().Pos.Value);
+                        var curDist = GetDistanceBetween2Points(seenObject.Value.Pos.Value, GetBallDetailsByCoach().Pos.Value);
                         if (curDist < maxDist)
                         {
                             maxDist = curDist;
