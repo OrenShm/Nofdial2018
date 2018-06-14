@@ -183,31 +183,76 @@ namespace RoboCup
                 return true;
             }
 
-                if((m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.X < GetBallDetailsByCoach().Pos.Value.X) ||
-                   (m_side == 'r' && GetMyPlayerDetailsByCoach().Pos.Value.X > GetBallDetailsByCoach().Pos.Value.X))
-                {
-                    return true;
-                }
-                var ball = m_memory.GetSeenObject("ball");
-            if (ball != null && Math.Abs(ball.Direction.Value) < 10)
+            if ((m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.X < GetBallDetailsByCoach().Pos.Value.X) ||
+               (m_side == 'r' && GetMyPlayerDetailsByCoach().Pos.Value.X > GetBallDetailsByCoach().Pos.Value.X))
             {
-                if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
+                return true;
+            }
+            var ball = m_memory.GetSeenObject("ball");
+            double angleToPoint;
+            bool shouldSpeen = false;
+            double direction = 0;
+            if (ball != null)
+            {
+                angleToPoint = ball.Direction.Value;
+                if (Math.Abs(angleToPoint) < 45)
                 {
-                    m_robot.Turn(NormalizeTo180(ball.Direction.Value + 90));
-                    WaitSimulatorStep();
-                    m_robot.Dash(15);
-                    WaitSimulatorStep();
-                    m_robot.Turn(-90);
-                    return false;
+                    shouldSpeen = true;
+                    direction = ball.Direction.Value;
+                }
+            }
+            else
+            {
+                angleToPoint = GetAngleToPoint(GetBallDetailsByCoach().Pos.Value);
+                if (Math.Abs(angleToPoint) < 45)
+                {
+                    shouldSpeen = true;
+                    direction = angleToPoint;
+                }
+            }
+            if (shouldSpeen)
+            {
+                if (GetMyPlayerDetailsByCoach().Pos.Value.X >= 0)
+                {
+                    if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
+                    {
+                        m_robot.Turn(NormalizeTo180(direction + 90));
+                        WaitSimulatorStep();
+                        m_robot.Dash(20);
+                        WaitSimulatorStep();
+                        m_robot.Turn(-90);
+                        return false;
+                    }
+                    else
+                    {
+                        m_robot.Turn(NormalizeTo180(direction - 90));
+                        WaitSimulatorStep();
+                        m_robot.Dash(20);
+                        WaitSimulatorStep();
+                        m_robot.Turn(90);
+                        return false;
+                    }
                 }
                 else
                 {
-                    m_robot.Turn(NormalizeTo180(ball.Direction.Value - 90));
-                    WaitSimulatorStep();
-                    m_robot.Dash(15);
-                    WaitSimulatorStep();
-                    m_robot.Turn(90);
-                    return false;
+                    if (m_side == 'l' && GetMyPlayerDetailsByCoach().Pos.Value.Y < GetBallDetailsByCoach().Pos.Value.Y)
+                    {
+                        m_robot.Turn(NormalizeTo180(direction - 90));
+                        WaitSimulatorStep();
+                        m_robot.Dash(20);
+                        WaitSimulatorStep();
+                        m_robot.Turn(90);
+                        return false;
+                    }
+                    else
+                    {
+                        m_robot.Turn(NormalizeTo180(direction + 90));
+                        WaitSimulatorStep();
+                        m_robot.Dash(20);
+                        WaitSimulatorStep();
+                        m_robot.Turn(-90);
+                        return false;
+                    }
                 }
 
             }

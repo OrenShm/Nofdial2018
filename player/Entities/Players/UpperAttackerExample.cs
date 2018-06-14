@@ -110,70 +110,56 @@ namespace RoboCup
 
         private void KickOrMoveWithBall(SeenCoachObject player, double power, double distanceToBall, double directiontoGoal, SeenCoachObject ball)
         {
-            if (m_side == 'l')
+            if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
             {
-                if (GetMyPlayerDetailsByCoach().Pos.Value.Y > 0)
-                {
-                    directiontoGoal = GetAngleToOpponentGoalLow();
-                }
-                else
-                {
-                    directiontoGoal = GetAngleToOpponentGoalUp();
-                }
+                directiontoGoal = GetAngleToOpponentGoalLow();
             }
-
-            if (Math.Abs(distanceToBall) < 10 && Math.Abs(player.BodyAngle.Value) > 95)
+            else
             {
-                PointF point;
-                if (m_side == 'l')
-                {
-                    float y;
-                    float x;
-                    //if (Math.Abs(player.Pos.Value.Y - ball.Pos.Value.Y) <3)
-                    //{
-                    //    y = 0;
-                    //}
-                    //else
-                    //{
-                    //    y = -10;
-                    //}
-                    y = -10;
-                    if (Math.Abs(player.Pos.Value.X - ball.Pos.Value.X) < 3)
-                    {
-                        x = -10;
-                    }
-                    else
-                    {
-                        x = 10;
-                    }
-
-                    point = new PointF()
-                    {
-                        X = ball.Pos.Value.X + x,
-                        Y = ball.Pos.Value.Y + y
-                    };
-                }
-                else
-                {
-                    point = new PointF()
-                    {
-                        X = ball.Pos.Value.X + 3 ,
-                        Y = ball.Pos.Value.Y + 10
-                    };
-                }
-               
-                goToCoordinate(point, 0);
+                directiontoGoal = GetAngleToOpponentGoalUp();
             }
-            else if (NearBoal(distanceToBall))
+            var myBall = m_memory.GetSeenObject("ball");
+            //if (Math.Abs(distanceToBall) < 10)
+            //{
+            //    if (myBall == null)
+            //    {
+            //        PointF point;
+            //        if (m_side == 'l')
+            //        {
+            //            point = new PointF()
+            //            {
+            //                X = ball.Pos.Value.X,
+            //                Y = ball.Pos.Value.Y + 10
+            //            };
+            //        }
+            //        else
+            //        {
+            //            point = new PointF()
+            //            {
+            //                X = ball.Pos.Value.X + 3,
+            //                Y = ball.Pos.Value.Y - 10
+            //            };
+                        
+            //        }
+            //        goToCoordinate(point, 0);
+            //        return;
+            //    }
+            //}
+            
+            if (NearBoal(distanceToBall))
             {
-                if (Math.Abs(player.BodyAngle.Value) > 95)
+                if (Math.Abs(player.BodyAngle.Value) > 45)
                 {
-                    m_robot.Kick(-30, directiontoGoal);
+                    SpinAroundBall();
+                    m_robot.Kick(power, directiontoGoal);
                 }
                 else
                 {
                     m_robot.Kick(power, directiontoGoal);
+
                 }
+
+
             }
             else
             {
